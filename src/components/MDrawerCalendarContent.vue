@@ -1,16 +1,20 @@
 <template>
     <n-drawer to="#drawer-target" v-model:show="drawerShow" placement="top">
-        <n-drawer-content :title="'Plants to water (' + date?.toLocaleDateString('default', { weekday: 'long' }) + ')'">
-            Stoner is a 1965 novel by the American writer John Williams.
+        <n-drawer-content :title="'Plants to water (' + formatDateWithWeekday(date) + ')'">
+            <!-- Mocked data ... -->
+            <n-list>
+                <n-list-item> a </n-list-item>
+                <n-list-item> a </n-list-item>
+                <n-list-item> a </n-list-item>
+                <n-list-item> a </n-list-item>
+            </n-list>
 
             <template #footer>
-                <n-flex>
-                    <n-button round @click="drawerShow = false" secondary type="error">
-                        <template #icon>
-                            <DismissIcon />
-                        </template>
-                    </n-button>
-                </n-flex>
+                <n-button round @click="drawerShow = false" secondary type="error" size="tiny">
+                    <template #icon>
+                        <DismissIcon />
+                    </template>
+                </n-button>
             </template>
         </n-drawer-content>
     </n-drawer>
@@ -25,5 +29,13 @@ const drawerShow = defineModel({ required: true, default: false });
 const { date } = defineProps({
     date: Date
 })
+const formatDateWithWeekday = (date: Date | any): string => {
+    const options: Intl.DateTimeFormatOptions = {
+        weekday: 'long',  // Full name of the weekday
+        day: 'numeric',   // Day of the month
+        month: 'long',    // Full name of the month
+    };
+    return date?.toLocaleDateString('default', options);
+};
 
 </script>
