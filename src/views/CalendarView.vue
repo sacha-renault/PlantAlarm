@@ -1,30 +1,21 @@
 <template>
     <n-flex class="calendar-container">
-        <m-calendar />
+        <m-calendar id="drawer-target" @day-clicked="handleClick" />
+        <m-drawer-calendar-content v-model="drawerShow" :date="date" />
     </n-flex>
 </template>
 
 <script setup lang="ts">
-import { addDays, isYesterday } from 'date-fns'
-import { useMessage } from 'naive-ui'
-import { defineComponent, ref } from 'vue'
+import { ref } from 'vue'
 import MCalendar from '../components/calendar/MCalendar.vue';
+import MDrawerCalendarContent from '../components/MDrawerCalendarContent.vue';
 
-const msgProvider = useMessage();
-const value = ref(null);
-const handleUpdateValue = (_: number,
-    { year, month, date }: { year: number, month: number, date: number }) => {
-    msgProvider.success(`${year}-${month}-${date}`);
+const drawerShow = ref(false);
+const date = ref<Date>(new Date());
+const handleClick = (d: Date) => {
+    drawerShow.value = true;
+    date.value = d;
 }
-const isDateDisabled = (timestamp: number) => {
-    if (isYesterday(timestamp)) {
-        return true
-    }
-    return false
-}
-const test = `
-<n-button> salut </n-button>
-`
 </script>
 
 <style scoped>
@@ -32,6 +23,6 @@ const test = `
     padding: 1rem;
     flex-grow: 1;
     max-width: 1024px;
-    width: 100%;
+    width: 90%;
 }
 </style>

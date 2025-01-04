@@ -39,6 +39,7 @@ import { ref, computed } from 'vue';
 const today = new Date();
 const currentMonth = ref(new Date());
 const selectedDate = ref<Date | null>(null);
+const emits = defineEmits(['dayClicked']);
 
 // Format the current month display
 const currentMonthDisplay = computed(() => {
@@ -99,6 +100,7 @@ const calendarDays = computed(() => {
 
 const handleClick = (date: Date) => {
     selectedDate.value = date;
+    emits('dayClicked', date);
 };
 
 const nextMonth = () => {
