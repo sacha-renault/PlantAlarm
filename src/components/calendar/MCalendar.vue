@@ -25,7 +25,7 @@
                 <m-calendar-item v-for="date in calendarDays" :key="date.id" :date="date"
                     :selected="selectedDate !== null && isSameDay(selectedDate, date.date)"
                     :current-day="isSameDay(today, date.date)" :is-other-month="!isSameMonth(currentMonth, date.date)"
-                    @clicked="handleClick" />
+                    @clicked="handleClick" :plants="plants" />
             </div>
         </n-layout>
     </n-layout>
@@ -35,10 +35,12 @@
 import { ArrowRight28Filled as ForwardIcon, ArrowLeft28Filled as BackwardIcon } from '@vicons/fluent'
 import MCalendarItem from './MCalendarItem.vue';
 import { ref, computed } from 'vue';
+import type { FullPlantsDto } from '../../api';
 
 const today = new Date();
 const currentMonth = ref(new Date());
 const selectedDate = ref<Date | null>(null);
+const { plants } = defineProps<{ plants: FullPlantsDto[] }>()
 const emits = defineEmits(['dayClicked']);
 
 // Format the current month display

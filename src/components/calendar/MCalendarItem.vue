@@ -13,8 +13,8 @@
                 <div>{{ getDayName(date.date) }}</div>
             </n-flex>
             <div class="calendar-item-content">
-                <n-badge value="999+">
-                    <n-avatar size="medium" />
+                <n-badge v-if="plantsOnDay.length !== 0" :value="plantsOnDay.length - 1">
+                    <n-avatar round size="medium" :src="mainImage" />
                 </n-badge>
             </div>
         </n-flex>
@@ -23,6 +23,9 @@
 
 <script setup lang="ts">
 import { useThemeVars } from 'naive-ui'
+import { onMounted, ref } from 'vue';
+import type { FullPlantsDto } from '../../api';
+import { filterPlantsAtDay } from '../../utils';
 
 interface DateInfo {
     id: string;
@@ -35,18 +38,36 @@ const props = defineProps<{
     selected: boolean;
     currentDay: boolean;
     isOtherMonth: boolean;
+    plants: FullPlantsDto[];
 }>();
 
 const emits = defineEmits(['clicked']);
+const plantsOnDay = ref<FullPlantsDto[]>([]);
 const themeVars = useThemeVars();
+const mainImage = ref<string | null>(null);
 
+// Methods
 const onClick = () => {
     emits('clicked', props.date.date);
 };
 
+const getFirstPlantImage = () => {
+    const plant = plantsOnDay.value.find(p => p.img !== null);
+    if (plant !== undefined) {
+        return plant.img;
+    }
+    return null;
+}
+
 const getDayName = (date: Date): string => {
     return date.toLocaleDateString('default', { weekday: 'short' });
 };
+
+onMounted(async () => {
+    // reset to be sure
+    plantsOnDay.value = filterPlantsAtDay(props.plants, props.date.date);
+    mainImage.value = getFirstPlantImage();
+})
 </script>
 
 <style scoped>
@@ -117,7 +138,6 @@ const getDayName = (date: Date): string => {
 
 .cell-day {
     aspect-ratio: 1 / 1;
-    height: 100%;
     border-radius: 50%;
     width: 1.8em;
     height: 1.8em;
@@ -128,6 +148,7 @@ const getDayName = (date: Date): string => {
 
 .current-day .cell-day {
     background-color: v-bind('themeVars.primaryColor');
+    color: v-bind('themeVars.baseColor');
 }
 
 .other-month {
