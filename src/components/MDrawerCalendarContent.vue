@@ -1,15 +1,15 @@
 <template>
-    <n-drawer to="#drawer-target" v-model:show="drawerShow" placement="top">
+    <n-drawer to="#drawer-target" v-model:show="drawerShow" placement="top" height="50%">
         <n-drawer-content :title="'Plants to water (' + formatDateWithWeekday(date) + ')'">
-            <!-- Mocked data ... -->
-            <n-list v-if="plantsOnDay.length !== 0">
-                <n-list-item v-for="plant in plantsOnDay"> {{ plant.name }} </n-list-item>
-            </n-list>
+            <!-- Data  -->
+            <n-data-table :columns="columns" :data="plantsOnDay" :bordered="false" v-if="plantsOnDay.length !== 0" />
 
+            <!-- In case no plant to water -->
             <n-empty v-else>
                 No plant to water on that day
             </n-empty>
 
+            <!-- Footer to close -->
             <template #footer>
                 <n-button round @click="drawerShow = false" secondary type="error" size="tiny">
                     <template #icon>
@@ -25,25 +25,44 @@
 import {
     Dismiss28Filled as DismissIcon,
 } from '@vicons/fluent'
+import { NAvatar, NButton } from 'naive-ui';
 import { filterPlantsAtDay } from '../utils';
 import { FullPlantsDto } from '../api';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, h } from 'vue';
+import { formatDateWithWeekday } from '../utils';
+
+interface PlantDataDisplay {
+    img: string
+    name: string
+    waterQuantity: number
+}
+
+const columns = ref([
+    {
+        title: 'Image', key: 'img', render(row: PlantDataDisplay) {
+            return h(
+                NAvatar, {
+                size: 'medium',
+                round: true,
+                src: row.img
+            })
+        }
+    },
+    {
+        title: 'Name', key: 'name'
+    },
+    {
+        title: 'Water (mL)', key: 'waterQuantity'
+    },
+]);
 
 const drawerShow = defineModel({ required: true, default: false });
 const plantsOnDay = ref<FullPlantsDto[]>([]);
 const { date, plants } = defineProps<{ date: Date, plants: FullPlantsDto[] }>();
-const formatDateWithWeekday = (date: Date | any): string => {
-    const options: Intl.DateTimeFormatOptions = {
-        weekday: 'long',  // Full name of the weekday
-        day: 'numeric',   // Day of the month
-        month: 'long',    // Full name of the month
-    };
-    return date?.toLocaleDateString('en-US', options);
-};
 
 onMounted(async () => {
     plantsOnDay.value = filterPlantsAtDay(plants, date);
-});
+})
 
 watch(() => date, (newValue) => {
     plantsOnDay.value = filterPlantsAtDay(plants, newValue);

@@ -13,6 +13,24 @@ const calcDayDifference = (date1: Date, date2: Date): number => {
     return diffTime / (1000 * 60 * 60 * 24);
 }
 
+
+/**
+ * Formats a date object into a string with weekday, day, and month.
+ * @param date - The date to format. Can be a Date object or any value that can be converted to a date.
+ * @returns A string representation of the date in the format "Weekday, Month Day" (e.g., "Monday, January 1").
+ * @example
+ * // Returns "Monday, January 1"
+ * formatDateWithWeekday(new Date(2024, 0, 1));
+ */
+export const formatDateWithWeekday = (date: Date | any): string => {
+    const options: Intl.DateTimeFormatOptions = {
+        weekday: 'long',  // Full name of the weekday
+        day: 'numeric',   // Day of the month
+        month: 'long',    // Full name of the month
+    };
+    return date?.toLocaleDateString('en-US', options);
+};
+
 /**
  * Filters plants that need to be watered on a specific date based on their watering interval
  * @param plants - Array of plant objects containing watering information

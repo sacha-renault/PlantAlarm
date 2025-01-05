@@ -4,6 +4,7 @@ export interface FullPlantsDto {
     lastWatered: Date;
     img: string | null;
     dayInterval: number;
+    waterQuantity: number;
 }
 
 const mockedPlants = [
@@ -12,14 +13,16 @@ const mockedPlants = [
         name: "Orchidée 1",
         lastWatered: new Date(Date.now()),
         dayInterval: 2,
-        img: null
+        img: null,
+        waterQuantity: 200
     },
     {
         id: 1,
         name: "Orchidée 2",
         lastWatered: new Date(Date.now()),
         dayInterval: 4,
-        img: "https://townhouseflowers.com.au/wp-content/uploads/2022/04/phally.jpg.webp"
+        img: "https://townhouseflowers.com.au/wp-content/uploads/2022/04/phally.jpg.webp",
+        waterQuantity: 200
     },
 ]
 
