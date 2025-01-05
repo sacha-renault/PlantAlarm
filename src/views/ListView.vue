@@ -1,5 +1,5 @@
 <template>
-    <div class="view-list-container">
+    <div class="view-list-container wf">
         <h1>
             Plants to water
         </h1>
@@ -7,10 +7,10 @@
         <n-flex vertical class="wf" align="center">
             <h2> {{ displayDay() }} </h2>
             <n-flex class="wf" style="gap: 0px;" v-if="plants.length !== 0">
-                <SwipableListItem v-for="plant in plants" :name="plant.name" :water-qty="plant.waterQuantity"
-                    :img="plant.img ?? ''" />
+                <swipable-list-item v-for="plant in plants" :name="plant.name" :water-qty="plant.waterQuantity"
+                    :img="plant.img ?? ''" @swiped-left="console.log('swiped left')" />
             </n-flex>
-            <day-paginator v-model="selectedDay" @date-changed="onDateChanged" />
+            <n-divider style="width:50%" />
         </n-flex>
     </div>
 
@@ -18,7 +18,6 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import DayPaginator from '../components/DayPaginator.vue';
 import SwipableListItem from '../components/SwipableListItem.vue';
 import { calcDayDifference, filterPlantsAtDay } from '../utils';
 import { api, FullPlantsDto } from '../api';
@@ -71,5 +70,9 @@ h1 {
     align-items: center;
     justify-content: start;
     padding: 0.5rem;
+}
+
+.bottom-paginator {
+    margin: auto 12rem;
 }
 </style>
