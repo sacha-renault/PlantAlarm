@@ -1,25 +1,26 @@
 <template>
-    <n-flex class="wf main-swipable-container">
-        <!-- Main display -->
-        <n-flex align="center" justify="space-evenly" @touchstart="handleTouchStart" @touchmove="handleTouchMove"
-            @touchend="handleTouchEnd" :style="{ transform: 'translateX(' + currentX.toString() + 'px)' }"
-            class="wf swipable-container">
-            <n-avatar round />
-            <n-divider vertical />
-            <n-space> name </n-space>
-            <n-divider vertical />
-            <n-space> water qty </n-space>
+    <n-collapse-transition :show="show">
+        <n-flex class="wf main-swipable-container">
+            <!-- Main display -->
+            <n-flex align="center" justify="space-evenly" @touchstart="handleTouchStart" @touchmove="handleTouchMove"
+                @touchend="handleTouchEnd" :style="{ transform: 'translateX(' + currentX.toString() + 'px)' }"
+                class="wf swipable-container">
+                <n-avatar round />
+                <n-divider vertical />
+                <n-space> name </n-space>
+                <n-divider vertical />
+                <n-space> water qty </n-space>
+            </n-flex>
+            <div class="under-swipe-container">
+                <n-button class="under-swipe-part" primary type="warning">
+                    <TimerIcon class="icon-small icon-grow" :class="[{ 'swiped': isSwipedLeft }]" />
+                </n-button>
+                <n-button class="under-swipe-part" primary type="info">
+                    <WaterIcon class="icon-small icon-grow" :class="[{ 'swiped': isSwipedRight }]" />
+                </n-button>
+            </div>
         </n-flex>
-
-        <div class="under-swipe-container">
-            <n-button class="under-swipe-part" primary type="warning">
-                <TimerIcon class="icon-small icon-grow" :class="[{ 'swiped': isSwipedLeft }]" />
-            </n-button>
-            <n-button class="under-swipe-part" primary type="info">
-                <WaterIcon class="icon-small icon-grow" :class="[{ 'swiped': isSwipedRight }]" />
-            </n-button>
-        </div>
-    </n-flex>
+    </n-collapse-transition>
 </template>
 
 <script setup lang="ts">
@@ -33,6 +34,7 @@ const themeVars = useThemeVars();
 const requiredDrag = 150;
 const animationTime = 0.5;
 
+// vue ref
 const isSwipedRight = ref(false);
 const isSwipedLeft = ref(false);
 const absX = ref(0);
@@ -40,6 +42,7 @@ const startX = ref(0);
 const currentX = ref(0);
 const isDragging = ref(false);
 const emits = defineEmits(['swipedLeft', 'swipedRight'])
+const show = ref(true);
 
 const handleTouchStart = (e: TouchEvent) => {
     startX.value = e.touches[0].clientX;
@@ -77,6 +80,7 @@ const handleTouchEnd = () => {
         currentX.value = 0;
         isSwipedLeft.value = false;
         isSwipedRight.value = false;
+        show.value = false;
     }, animationTime * 1000); // Match animation duration
 };
 

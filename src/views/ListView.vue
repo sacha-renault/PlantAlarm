@@ -6,27 +6,27 @@
         <n-divider />
         <n-flex vertical class="wf" align="center">
             <h2> {{ displayDay() }} </h2>
-            <n-flex class="wf" style="gap: 0px;">
-                <SwipableListItem />
-                <SwipableListItem />
-                <SwipableListItem />
-                <SwipableListItem />
+            <n-flex class="wf" style="gap: 0px;" v-if="plants.length !== 0">
+                <SwipableListItem v-for="plant in plants" />
             </n-flex>
-            <day-paginator v-model="selectedDay" @date-changed="console.log(selectedDay)" />
+            <day-paginator v-model="selectedDay" @date-changed="onDateChanged" />
         </n-flex>
     </div>
 
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import DayPaginator from '../components/DayPaginator.vue';
 import SwipableListItem from '../components/SwipableListItem.vue';
-import { calcDayDifference } from '../utils';
+import { calcDayDifference, filterPlantsAtDay } from '../utils';
+import { api } from '../api';
 
 const selectedDay = ref(new Date(Date.now()));
 const today = ref(new Date(Date.now()));
+const plants = ref([]);
 
+// methods
 const displayDay = () => {
     const dayDiff = calcDayDifference(selectedDay.value, today.value);
     if (dayDiff === 0) {
@@ -45,6 +45,17 @@ const displayDay = () => {
         }
     }
 }
+const onDateChanged = async () => {
+    // this force a reset of all SwipableListItem
+    plants.value = [];
+
+    // then we assign new values
+    plants.value = filterPlantsAtDay(await api.getAllPlants(), selectedDay.value);
+}
+
+onMounted(async () => {
+    plants.value = filterPlantsAtDay(await api.getAllPlants(), selectedDay.value);
+})
 </script>
 
 <style scoped>
