@@ -5,11 +5,11 @@
             <n-flex align="center" justify="space-evenly" @touchstart="handleTouchStart" @touchmove="handleTouchMove"
                 @touchend="handleTouchEnd" :style="{ transform: 'translateX(' + currentX.toString() + 'px)' }"
                 class="wf swipable-container">
-                <n-avatar round />
+                <n-avatar round :src="img" />
                 <n-divider vertical />
-                <n-space> name </n-space>
+                <n-space> {{ name }} </n-space>
                 <n-divider vertical />
-                <n-space> water qty </n-space>
+                <n-space> {{ waterQty }} mL </n-space>
             </n-flex>
             <div class="under-swipe-container">
                 <n-button class="under-swipe-part" primary type="warning">
@@ -43,6 +43,9 @@ const currentX = ref(0);
 const isDragging = ref(false);
 const emits = defineEmits(['swipedLeft', 'swipedRight'])
 const show = ref(true);
+
+// see props
+const { name, waterQty, img } = defineProps<{ name: string, waterQty: number, img: string }>()
 
 const handleTouchStart = (e: TouchEvent) => {
     startX.value = e.touches[0].clientX;

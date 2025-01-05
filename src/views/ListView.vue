@@ -7,7 +7,8 @@
         <n-flex vertical class="wf" align="center">
             <h2> {{ displayDay() }} </h2>
             <n-flex class="wf" style="gap: 0px;" v-if="plants.length !== 0">
-                <SwipableListItem v-for="plant in plants" />
+                <SwipableListItem v-for="plant in plants" :name="plant.name" :water-qty="plant.waterQuantity"
+                    :img="plant.img ?? ''" />
             </n-flex>
             <day-paginator v-model="selectedDay" @date-changed="onDateChanged" />
         </n-flex>
@@ -20,11 +21,11 @@ import { onMounted, ref } from 'vue';
 import DayPaginator from '../components/DayPaginator.vue';
 import SwipableListItem from '../components/SwipableListItem.vue';
 import { calcDayDifference, filterPlantsAtDay } from '../utils';
-import { api } from '../api';
+import { api, FullPlantsDto } from '../api';
 
 const selectedDay = ref(new Date(Date.now()));
 const today = ref(new Date(Date.now()));
-const plants = ref([]);
+const plants = ref<FullPlantsDto[]>([]);
 
 // methods
 const displayDay = () => {
