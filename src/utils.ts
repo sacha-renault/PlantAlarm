@@ -6,7 +6,7 @@ import type { FullPlantsDto } from "./api";
  * @param date2 The second date
  * @returns The absolute number of days between the two dates
  */
-const calcDayDifference = (date1: Date, date2: Date): number => {
+export const calcDayDifference = (date1: Date, date2: Date): number => {
     const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
     const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
     const diffTime = Math.abs(d2.getTime() - d1.getTime());
@@ -46,4 +46,16 @@ export function filterPlantsAtDay(plants: FullPlantsDto[], date: Date): FullPlan
         }
     }
     return plantsAtDay;
+}
+
+/**
+ * Adds a specified number of days to a given date
+ * @param date The starting date
+ * @param days Number of days to add
+ * @returns A new Date object with the days added
+ */
+export function addDays(date: Date, days: number): Date {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
 }
