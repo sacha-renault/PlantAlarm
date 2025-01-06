@@ -1,5 +1,5 @@
 <template>
-    <div class="view-list-container wf">
+    <div class="wf content-container">
         <h1>
             Plants to water
         </h1>
@@ -59,19 +59,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-h1 {
-    font-size: clamp(2rem, calc(5vw + 1rem), 5rem);
-}
-
-.view-list-container {
-    width: min(80%, 1024px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    padding: 0.5rem;
-}
-
 .bottom-paginator {
     margin: auto 12rem;
 }

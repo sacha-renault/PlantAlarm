@@ -12,10 +12,10 @@
                 <n-space> {{ waterQty }} mL </n-space>
             </n-flex>
             <div class="under-swipe-container">
-                <n-button class="under-swipe-part" primary type="warning">
+                <n-button class="under-swipe-part" primary type="warning" :bordered="false">
                     <TimerIcon class="icon-small icon-grow" :class="[{ 'swiped': isSwipedLeft }]" />
                 </n-button>
-                <n-button class="under-swipe-part" primary type="info">
+                <n-button class="under-swipe-part" primary type="info" :bordered="false">
                     <WaterIcon class="icon-small icon-grow" :class="[{ 'swiped': isSwipedRight }]" />
                 </n-button>
             </div>
@@ -97,7 +97,6 @@ const handleTouchEnd = () => {
 }
 
 .swipable-container {
-    box-sizing: border-box;
     padding: 0.5rem 1rem;
     border: 1px solid;
     border-radius: v-bind('themeVars.borderRadius');
@@ -122,11 +121,13 @@ const handleTouchEnd = () => {
     box-sizing: border-box;
     width: 50%;
     height: 100%;
-    border-radius: v-bind('themeVars.borderRadius');
+    border-color: transparent;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     padding: 1rem;
+    overflow: hidden;
+    transform: scale(0.99);
     overflow: hidden;
 
     &:first-child {

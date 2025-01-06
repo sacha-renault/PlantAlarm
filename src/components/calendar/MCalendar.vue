@@ -68,7 +68,7 @@ const today = new Date();
 const currentMonth = ref(new Date());
 const selectedDate = ref<Date | null>(null);
 const { plants } = defineProps<{ plants: FullPlantsDto[] }>()
-const plantSelected = ref(plants.map(p => true));
+const plantSelected = ref(plants.map(_ => true));
 const emits = defineEmits(['dayClicked']);
 
 // Format the current month display

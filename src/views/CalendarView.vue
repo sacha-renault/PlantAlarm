@@ -1,6 +1,6 @@
 <template>
     <div v-if="isLoading">Loading...</div>
-    <n-flex class="calendar-container" v-else>
+    <n-flex class="calendar-container content-container" v-else>
         <m-calendar id="drawer-target" @day-clicked="handleClick" :plants="plants" />
         <m-drawer-calendar-content v-model="drawerShow" :date="date" :plants="plants" />
     </n-flex>
@@ -18,7 +18,7 @@ const drawerShow = ref(false);
 const date = ref<Date>(new Date());
 const isLoading = ref(true)
 const handleClick = (d: Date) => {
-    drawerShow.value = true;
+    // drawerShow.value = true;
     date.value = d;
 }
 
@@ -27,12 +27,3 @@ onMounted(async () => {
     isLoading.value = false
 })
 </script>
-
-<style scoped>
-.calendar-container {
-    padding: 1rem;
-    flex-grow: 1;
-    max-width: 1024px;
-    width: 90%;
-}
-</style>
