@@ -17,7 +17,9 @@ pub struct PlantDto {
 pub struct Plant {
     pub id: i64,
     pub name: String,
+    #[serde(rename = "dayInterval")]
     pub day_interval: i64,
+    #[serde(rename = "waterQuantity")]
     pub water_quantity: i64,
     pub image: Option<String>,
 }
@@ -40,7 +42,7 @@ impl Plant {
     }
 
     /// insert a new plant
-    pub async fn insert_plant(pool: &SqlitePool, plant: PlantDto) -> Result<i64, BackendError> {
+    pub async fn insert_plant(pool: &SqlitePool, plant: PlantDto) -> Result<Plant, BackendError> {
         // Make the insert query
         let query = r#"
             INSERT INTO plant (name, day_interval, water_quantity, image)
@@ -57,7 +59,13 @@ impl Plant {
             .await
             .map_error()?;
 
-        Ok(result.last_insert_rowid())
+        Ok(Plant {
+            id: result.last_insert_rowid(),
+            name: plant.name,
+            day_interval: plant.day_interval,
+            water_quantity: plant.water_quantity,
+            image: plant.image,
+        })
     }
 
     /// get a single plant by its id
