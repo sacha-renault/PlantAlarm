@@ -50,11 +50,11 @@ const onDateChanged = async () => {
     plants.value = [];
 
     // then we assign new values
-    plants.value = filterPlantsAtDay(await api.getAllPlants(), selectedDay.value);
+    plants.value = filterPlantsAtDay(await api.getPlantsWithRecentWatering(), selectedDay.value);
 }
 
 onMounted(async () => {
-    plants.value = filterPlantsAtDay(await api.getAllPlants(), selectedDay.value);
+    plants.value = filterPlantsAtDay(await api.getPlantsWithRecentWatering(), selectedDay.value);
 })
 </script>
 

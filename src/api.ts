@@ -31,12 +31,16 @@ const mockedPlants = [
 ]
 
 class Api {
-    async getAllPlants(): Promise<FullPlantsDto[]> {
+    async getPlantsWithRecentWatering(): Promise<FullPlantsDto[]> {
         return mockedPlants;
     }
 
-    async addPlant(plant: PlantDto): Promise<number> {
-        return await invoke('add_plant', { plantDto: plant });
+    async addPlant(plant: PlantDto): Promise<PlantModel> {
+        return await invoke<PlantModel>('add_plant', { plantDto: plant });
+    }
+
+    async getAllPlants(): Promise<PlantModel[]> {
+        return await invoke<PlantModel[]>('get_all_plants');
     }
 }
 

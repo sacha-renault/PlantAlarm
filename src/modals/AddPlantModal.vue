@@ -32,9 +32,9 @@
                             <n-empty v-if="formValue.image === ''">
                                 No file ...
                             </n-empty>
-                            <n-space v-else class="img-preview">
-                                <n-image :src="formValue.image" style="object-fit: contain;" />
-                            </n-space>
+                            <n-flex v-else justify="center">
+                                <n-avatar round :src="formValue.image" object-fit="cover" class="img-preview" />
+                            </n-flex>
                         </n-flex>
                     </n-form-item>
 
@@ -119,9 +119,9 @@ const handleValidateClick = (e: MouseEvent) => {
                 waterQuantity: formValue.value.waterQty ?? 0,  // Shouldn't be 0
                 image: formValue.value.image
             };
-            api.addPlant(newPlant).then(id => {
+            api.addPlant(newPlant).then(plant => {
                 message.success('New plant created');
-                emits('plantAdded', id);
+                emits('plantAdded', plant);
                 resetForm();
             }).catch(err => {
                 message.error('An error occured when creating new plant: ' + err);
@@ -151,15 +151,10 @@ const handleImageInput = (e: Event) => {
     margin: 0.25rem 1rem;
 }
 
-.image-picker {
-    border: 1px dashed;
-    padding: 1rem 1rem;
-    border-radius: var(--n-border-radius);
-    background-color: var(--n-background-color);
-}
 
 .img-preview {
-    width: 100%;
-    height: 100%;
+    width: max(128px, 25%);
+    height: auto;
+    aspect-ratio: 1 / 1;
 }
 </style>

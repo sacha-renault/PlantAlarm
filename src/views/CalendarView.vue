@@ -23,7 +23,7 @@ const handleClick = (d: Date) => {
 }
 
 onMounted(async () => {
-    plants.value = await api.getAllPlants()
+    plants.value = await api.getPlantsWithRecentWatering()
     isLoading.value = false
 })
 </script>
