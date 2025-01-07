@@ -6,7 +6,9 @@ use sqlx::FromRow;
 #[derive(Debug, Deserialize)]
 pub struct PlantDto {
     pub name: String,
+    #[serde(rename = "dayInterval")]
     pub day_interval: i64,
+    #[serde(rename = "waterQuantity")]
     pub water_quantity: i64,
     pub image: Option<String>,
 }
@@ -38,7 +40,7 @@ impl Plant {
     }
 
     /// insert a new plant
-    pub async fn insert_plant(pool: &SqlitePool, plant: PlantDto) -> Result<(), BackendError> {
+    pub async fn insert_plant(pool: &SqlitePool, plant: PlantDto) -> Result<i64, BackendError> {
         // Make the insert query
         let query = r#"
             INSERT INTO plant (name, day_interval, water_quantity, image)
@@ -46,7 +48,7 @@ impl Plant {
         "#;
 
         // Execute the insert query
-        sqlx::query(query)
+        let result = sqlx::query(query)
             .bind(&plant.name)
             .bind(plant.day_interval)
             .bind(plant.water_quantity)
@@ -55,7 +57,7 @@ impl Plant {
             .await
             .map_error()?;
 
-        Ok(())
+        Ok(result.last_insert_rowid())
     }
 
     /// get a single plant by its id

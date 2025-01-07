@@ -1,6 +1,15 @@
 mod database;
-use database::{tauri_db_connect, DbConnection};
-use tauri::{Manager, State};
+use database::{
+    tauri_db_connect, BackendError, DbConnection, Plant, PlantDto, PlantWithWaterings, Watering,
+};
+use tauri::{command, Manager, State};
+
+#[command]
+async fn add_plant(db: State<'_, DbConnection>, plant_dto: PlantDto) -> Result<i64, BackendError> {
+    // Retrieve the pool from managed state
+    let pool = db.lock().await;
+    Plant::insert_plant(&pool, plant_dto).await
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -12,7 +21,7 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(tauri::generate_handler![add_plant])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

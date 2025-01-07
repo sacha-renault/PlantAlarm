@@ -2,8 +2,8 @@ use super::{constant::DB_RESULT_LIMIT, BackendError, MapErrorExt};
 use chrono::{Local, NaiveDateTime};
 use serde::{Deserialize, Serialize};
 use sqlx::sqlite::SqlitePool;
+use sqlx::Error;
 use sqlx::FromRow;
-use sqlx::{Error, Executor};
 
 #[derive(Debug, FromRow, Serialize)]
 pub struct Watering {

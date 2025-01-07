@@ -34,7 +34,7 @@ impl PlantWithWaterings {
         Ok(Self::new(plant, waterings))
     }
 
-    pub async fn get_plants_with_watering_month(
+    pub async fn get_plants_with_recent_waterings(
         pool: &SqlitePool,
         date_end_opt: Option<NaiveDateTime>,
         day_offset_opt: Option<u64>,
