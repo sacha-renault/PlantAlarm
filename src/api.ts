@@ -1,3 +1,7 @@
+import { invoke } from "@tauri-apps/api/core";
+import type { PlantDto } from "./interfaces/dto";
+import type { PlantModel } from "./interfaces/models";
+
 export interface FullPlantsDto {
     id: number;
     name: string;
@@ -29,6 +33,10 @@ const mockedPlants = [
 class Api {
     async getAllPlants(): Promise<FullPlantsDto[]> {
         return mockedPlants;
+    }
+
+    async addPlant(plant: PlantDto): Promise<number> {
+        return await invoke('add_plant', { plantDto: plant });
     }
 }
 

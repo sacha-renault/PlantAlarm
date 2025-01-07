@@ -57,7 +57,10 @@
 import type { FormInst } from 'naive-ui'
 import { useMessage } from 'naive-ui';
 import { ref } from 'vue';
+import { api } from '../api';
+import { PlantDto } from '../interfaces/dto';
 
+const emits = defineEmits(['plantAdded']);
 const message = useMessage();
 const formRef = ref<FormInst | null>(null)
 const model = defineModel({ default: false });
@@ -110,9 +113,19 @@ const handleValidateClick = (e: MouseEvent) => {
     e.preventDefault()
     formRef.value?.validate((errors) => {
         if (!errors && formValue.value.image !== '') {
-            // TODO validate
-            message.success('New plant created');
-            model.value = false;
+            const newPlant: PlantDto = {
+                name: formValue.value.name,
+                dayInterval: formValue.value.dayInterval ?? 0, // Shouldn't be 0
+                waterQuantity: formValue.value.waterQty ?? 0,  // Shouldn't be 0
+                image: formValue.value.image
+            };
+            api.addPlant(newPlant).then(id => {
+                message.success('New plant created');
+                emits('plantAdded', id);
+                resetForm();
+            }).catch(err => {
+                message.error('An error occured when creating new plant: ' + err);
+            });
         }
         else {
             message.error('Please fill all the inputs');
