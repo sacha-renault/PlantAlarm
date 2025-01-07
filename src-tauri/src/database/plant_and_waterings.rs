@@ -1,4 +1,4 @@
-use super::{Plant, Watering};
+use super::{BackendError, Plant, Watering};
 use chrono::{Days, Local, NaiveDateTime};
 use serde::{Deserialize, Serialize};
 use sqlx::{Error, SqlitePool};
@@ -24,7 +24,7 @@ impl PlantWithWaterings {
         }
     }
 
-    pub async fn new_from_plant_id(pool: &SqlitePool, id: i64) -> Result<Self, Error> {
+    pub async fn new_from_plant_id(pool: &SqlitePool, id: i64) -> Result<Self, BackendError> {
         // Get plant
         let plant = Plant::get_plant_by_id(&pool, id).await?;
 
@@ -38,7 +38,7 @@ impl PlantWithWaterings {
         pool: &SqlitePool,
         date_end_opt: Option<NaiveDateTime>,
         day_offset_opt: Option<u64>,
-    ) -> Result<Vec<Self>, Error> {
+    ) -> Result<Vec<Self>, BackendError> {
         // Handle optional date_end
         let date_end = date_end_opt.unwrap_or(Local::now().naive_utc());
         let day_offset = day_offset_opt.unwrap_or(31);

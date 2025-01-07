@@ -1,7 +1,7 @@
-use super::Watering;
+use super::{BackendError, MapErrorExt, Watering};
 use serde::{Deserialize, Serialize};
 use sqlx::sqlite::SqlitePool;
-use sqlx::{Error, FromRow};
+use sqlx::FromRow;
 
 #[derive(Debug, Deserialize)]
 pub struct PlantDto {
@@ -22,20 +22,23 @@ pub struct Plant {
 
 impl Plant {
     /// Get all plants in the db
-    pub async fn get_plants(pool: &SqlitePool) -> Result<Vec<Self>, Error> {
+    pub async fn get_plants(pool: &SqlitePool) -> Result<Vec<Self>, BackendError> {
         // Make the query
         let query = r#"
             SELECT * FROM plant
         "#;
 
         // Fetch the results from the database
-        let plants = sqlx::query_as::<_, Plant>(query).fetch_all(pool).await?;
+        let plants = sqlx::query_as::<_, Plant>(query)
+            .fetch_all(pool)
+            .await
+            .map_error()?;
 
         Ok(plants)
     }
 
     /// insert a new plant
-    pub async fn insert_plant(pool: &SqlitePool, plant: PlantDto) -> Result<(), Error> {
+    pub async fn insert_plant(pool: &SqlitePool, plant: PlantDto) -> Result<(), BackendError> {
         // Make the insert query
         let query = r#"
             INSERT INTO plant (name, day_interval, water_quantity, image)
@@ -49,13 +52,14 @@ impl Plant {
             .bind(plant.water_quantity)
             .bind(plant.image.as_ref())
             .execute(pool)
-            .await?;
+            .await
+            .map_error()?;
 
         Ok(())
     }
 
     /// get a single plant by its id
-    pub async fn get_plant_by_id(pool: &SqlitePool, id: i64) -> Result<Self, Error> {
+    pub async fn get_plant_by_id(pool: &SqlitePool, id: i64) -> Result<Self, BackendError> {
         // Make the query
         let query = r#"
             SELECT * FROM plant
@@ -66,13 +70,14 @@ impl Plant {
         let plant = sqlx::query_as::<_, Self>(query)
             .bind(id)
             .fetch_one(pool) // We expect at most one result
-            .await?;
+            .await
+            .map_error()?;
 
         Ok(plant)
     }
 
     /// get a single plant by its name
-    pub async fn get_plant_by_name(pool: &SqlitePool, name: String) -> Result<Self, Error> {
+    pub async fn get_plant_by_name(pool: &SqlitePool, name: String) -> Result<Self, BackendError> {
         // Make the query
         let query = r#"
             SELECT * FROM plant
@@ -83,13 +88,17 @@ impl Plant {
         let plant = sqlx::query_as::<_, Plant>(query)
             .bind(name)
             .fetch_one(pool) // We expect at most one result
-            .await?;
+            .await
+            .map_error()?;
 
         Ok(plant)
     }
 
     /// Get the plants given to an vec of ids
-    pub async fn get_plant_by_ids(pool: &SqlitePool, ids: Vec<i64>) -> Result<Vec<Plant>, Error> {
+    pub async fn get_plant_by_ids(
+        pool: &SqlitePool,
+        ids: Vec<i64>,
+    ) -> Result<Vec<Plant>, BackendError> {
         // Make the query with WHERE IN clause
         let query = r#"
             SELECT * FROM plant
@@ -107,7 +116,8 @@ impl Plant {
         let plants = sqlx::query_as::<_, Plant>(query)
             .bind(ids_json)
             .fetch_all(pool)
-            .await?;
+            .await
+            .map_error()?;
 
         Ok(plants)
     }
