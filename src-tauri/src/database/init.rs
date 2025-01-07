@@ -2,6 +2,7 @@ use super::constant::DB_FILE_NAME;
 use sqlx::sqlite::SqlitePool;
 use sqlx::{Error, Executor};
 use std::path::Path;
+use std::sync::Arc;
 use tauri::async_runtime::Mutex;
 use tauri::{AppHandle, Manager};
 
@@ -36,7 +37,11 @@ pub async fn init_db(db_directory_path: &str) -> Result<SqlitePool, Error> {
     let db_path = Path::new(db_directory_path).join(DB_FILE_NAME);
 
     // Build the pool
-    let pool = SqlitePool::connect(&format!("sqlite://{}?mode=rwc", db_path.display())).await?;
+    let pool = SqlitePool::connect(&format!(
+        "sqlite://{}?mode=rwc",
+        db_path.to_str().expect("Failed to convert path to string")
+    ))
+    .await?;
 
     // Create table if they don't exist
     create_tables(&pool).await?;
@@ -52,11 +57,20 @@ pub async fn tauri_db_connect(app: AppHandle) -> Result<DbConnection, Error> {
         .expect("Couldn't resolve the resource path.");
 
     // Ensure the directory exists
-    std::fs::create_dir_all(&app_data_dir)?;
+    std::fs::create_dir_all(
+        &app_data_dir
+            .to_str()
+            .expect("Failed to convert path to string"),
+    )?;
 
     // Connect to the db
     // This will create a file if it doesn't exist
-    let pool = init_db(app_data_dir).await?;
+    let pool = init_db(
+        app_data_dir
+            .to_str()
+            .expect("Failed to convert path to string"),
+    )
+    .await?;
 
     Ok(Arc::new(Mutex::new(pool)))
 }
