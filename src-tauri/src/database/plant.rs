@@ -1,16 +1,14 @@
-use std::collections::HashMap;
-use chrono::{NaiveDateTime, Local, Days};
-use serde::{Deserialize, Serialize};
-use sqlx::{FromRow, Error};
-use sqlx::sqlite::SqlitePool;
 use super::Watering;
+use serde::{Deserialize, Serialize};
+use sqlx::sqlite::SqlitePool;
+use sqlx::{Error, FromRow};
 
 #[derive(Debug, Deserialize)]
 pub struct PlantDto {
     pub name: String,
     pub day_interval: i64,
     pub water_quantity: i64,
-    pub image: Option<String>
+    pub image: Option<String>,
 }
 
 #[derive(Debug, FromRow, Serialize)]
@@ -19,7 +17,7 @@ pub struct Plant {
     pub name: String,
     pub day_interval: i64,
     pub water_quantity: i64,
-    pub image: Option<String>
+    pub image: Option<String>,
 }
 
 impl Plant {
@@ -31,9 +29,7 @@ impl Plant {
         "#;
 
         // Fetch the results from the database
-        let plants = sqlx::query_as::<_, Plant>(query)
-            .fetch_all(pool)
-            .await?;
+        let plants = sqlx::query_as::<_, Plant>(query).fetch_all(pool).await?;
 
         Ok(plants)
     }
@@ -114,72 +110,5 @@ impl Plant {
             .await?;
 
         Ok(plants)
-    }
-}
-
-#[derive(Debug, Serialize)]
-pub struct PlantWithWaterings {
-    pub name: String,
-    pub day_interval: i64,
-    pub water_quantity: i64,
-    pub image: Option<String>,
-    pub waterings: Vec<Watering>
-}
-
-impl PlantWithWaterings {
-    pub fn new(plant: Plant, waterings: Vec<Watering>) -> Self {
-        Self {
-            name: plant.name,
-            day_interval: plant.day_interval,
-            water_quantity: plant.water_quantity,
-            image: plant.image,
-            waterings,
-        }
-    }
-
-    pub async fn new_from_plant_id(pool: &SqlitePool, id: i64) -> Result<Self, Error> {
-        // Get plant
-        let plant = Plant::get_plant_by_id(&pool, id).await?;
-
-        // Get watering from this plant
-        let waterings = Watering::get_watering_by_plant_id(&pool, id).await?;
-
-        Ok(Self::new(plant, waterings))
-    }
-
-    pub async fn get_plants_with_watering_month(pool: &SqlitePool, date_end_opt: Option<NaiveDateTime>, day_offset_opt: Option<u64>) -> Result<Vec<Self>, Error> {
-        // Handle optional date_end
-        let date_end = date_end_opt.unwrap_or(Local::now().naive_utc());
-        let day_offset = day_offset_opt.unwrap_or(31);
-
-        // Start date is 31 days before end
-        // TODO, need to return a custom error for all the functions of the db
-        let date_start = date_end.checked_sub_days(Days::new(day_offset)).unwrap();
-
-        // Fetch watering result for 31 past days
-        let waterings = Watering::get_watering_by_dates(&pool, date_start, date_end).await?;
-
-        // Fetch plants
-        let plants = Plant::get_plant_by_ids(&pool, waterings.iter().map(|w| w.plant_id).collect()).await?;
-
-        // Group waterings by `plant_id`
-        let mut watering_map: HashMap<i64, Vec<Watering>> = HashMap::new();
-        for watering in waterings {
-            watering_map
-                .entry(watering.plant_id)
-                .or_insert_with(Vec::new)
-                .push(watering);
-        }
-
-        // group plants to watering
-        let plants_with_waterings: Vec<PlantWithWaterings> = plants
-            .into_iter()
-            .map(|plant| {
-                let associated_waterings = watering_map.remove(&plant.id).unwrap_or_default();
-                PlantWithWaterings::new(plant, associated_waterings)
-            })
-            .collect();
-
-        Ok(plants_with_waterings)
     }
 }
