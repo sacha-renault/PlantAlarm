@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import MCalendar from '../components/calendar/MCalendar.vue';
-import MDrawerCalendarContent from '../components/MDrawerCalendarContent.vue';
+import MDrawerCalendarContent from '../components/calendar/MDrawerCalendarContent.vue';
 import type { FullPlantsDto } from '../api';
 import { api } from '../api';
 

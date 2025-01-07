@@ -26,10 +26,10 @@ import {
     Dismiss28Filled as DismissIcon,
 } from '@vicons/fluent'
 import { NAvatar, NButton } from 'naive-ui';
-import { filterPlantsAtDay } from '../utils';
-import { FullPlantsDto } from '../api';
+import { filterPlantsAtDay } from '../../utils';
+import { FullPlantsDto } from '../../api';
 import { onMounted, ref, watch, h } from 'vue';
-import { formatDateWithWeekday } from '../utils';
+import { formatDateWithWeekday } from '../../utils';
 
 interface PlantDataDisplay {
     img: string

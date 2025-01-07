@@ -18,7 +18,7 @@
                     <n-flex vertical style="padding: 1rem;">
                         <h4>Choose plant(s) to display</h4>
                         <n-divider />
-                        <n-checkbox :checked="numberSelected === plantSelected.length"
+                        <n-checkbox @click="handleAllPlantClick" :checked="numberSelected === plantSelected.length"
                             :indeterminate="!(numberSelected === 0 || numberSelected === plantSelected.length)">
                             All plants
                         </n-checkbox>
@@ -165,6 +165,14 @@ const isSameMonth = (date1: Date, date2: Date): boolean => {
     return date1.getMonth() === date2.getMonth() &&
         date1.getFullYear() === date2.getFullYear();
 };
+
+const handleAllPlantClick = () => {
+    if (numberSelected.value === plantSelected.value.length) {
+        plantSelected.value = plantSelected.value.map(() => false)
+    } else {
+        plantSelected.value = plantSelected.value.map(() => true)
+    }
+}
 
 const numberSelected = computed(() => plantSelected.value.filter(item => item === true).length)
 </script>
