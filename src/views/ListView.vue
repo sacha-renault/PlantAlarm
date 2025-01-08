@@ -12,22 +12,20 @@
             <n-divider class="list-divider" />
         </n-flex>
     </div>
-
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { formatDayString, filterPlantsAtDay } from '../utils';
-import { api, FullPlantsDto } from '../api';
+import { api } from '../api';
 import PlantItemList from '../components/PlantItemList.vue';
+import type { PlantWithWateringsModel } from '../interfaces/models';
 
 const selectedDay = ref(new Date(Date.now()));
-const plants = ref<FullPlantsDto[]>([]);
-const showItem = ref<boolean[]>([])
+const plants = ref<PlantWithWateringsModel[]>([]);
 
 onMounted(async () => {
     plants.value = filterPlantsAtDay(await api.getPlantsWithRecentWatering(), selectedDay.value);
-    showItem.value = new Array(plants.value.length).fill(true);
 })
 </script>
 

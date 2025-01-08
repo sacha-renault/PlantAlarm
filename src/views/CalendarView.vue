@@ -10,10 +10,10 @@
 import { ref, onMounted } from 'vue'
 import MCalendar from '../components/calendar/MCalendar.vue';
 import MDrawerCalendarContent from '../components/calendar/MDrawerCalendarContent.vue';
-import type { FullPlantsDto } from '../api';
+import type { PlantWithWateringsModel } from '../api';
 import { api } from '../api';
 
-const plants = ref<FullPlantsDto[]>([]);
+const plants = ref<PlantWithWateringsModel[]>([]);
 const drawerShow = ref(false);
 const date = ref<Date>(new Date());
 const isLoading = ref(true)

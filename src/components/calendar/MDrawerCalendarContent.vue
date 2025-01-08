@@ -27,7 +27,7 @@ import {
 } from '@vicons/fluent'
 import { NAvatar, NButton } from 'naive-ui';
 import { filterPlantsAtDay } from '../../utils';
-import { FullPlantsDto } from '../../api';
+import { PlantWithWateringsModel } from '../../api';
 import { onMounted, ref, watch, h } from 'vue';
 import { formatDateWithWeekday } from '../../utils';
 
@@ -57,8 +57,8 @@ const columns = ref([
 ]);
 
 const drawerShow = defineModel({ required: true, default: false });
-const plantsOnDay = ref<FullPlantsDto[]>([]);
-const { date, plants } = defineProps<{ date: Date, plants: FullPlantsDto[] }>();
+const plantsOnDay = ref<PlantWithWateringsModel[]>([]);
+const { date, plants } = defineProps<{ date: Date, plants: PlantWithWateringsModel[] }>();
 
 onMounted(async () => {
     plantsOnDay.value = filterPlantsAtDay(plants, date);

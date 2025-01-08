@@ -1,4 +1,4 @@
-import type { FullPlantsDto } from "./api";
+import type { PlantWithWateringsModel } from "./interfaces/models";
 
 /**
  * Calculates the number of days between two dates, ignoring time components.
@@ -37,8 +37,8 @@ export const formatDateWithWeekday = (date: Date | any): string => {
  * @param date - Date to check for plants that need watering
  * @returns Array of plants that need to be watered on the specified date
  */
-export function filterPlantsAtDay(plants: FullPlantsDto[], date: Date): FullPlantsDto[] {
-    const plantsAtDay: FullPlantsDto[] = []
+export function filterPlantsAtDay(plants: PlantWithWateringsModel[], date: Date): PlantWithWateringsModel[] {
+    const plantsAtDay: PlantWithWateringsModel[] = []
     for (const plant of plants) {
         const dayDiff = calcDayDifference(date, plant.lastWatered);
         if (dayDiff % plant.dayInterval === 0) {

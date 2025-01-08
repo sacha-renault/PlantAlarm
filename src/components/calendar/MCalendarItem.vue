@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { useThemeVars } from 'naive-ui'
 import { onMounted, ref } from 'vue';
-import type { FullPlantsDto } from '../../api';
+import type { PlantWithWateringsModel } from "../../interfaces/models";
 import { filterPlantsAtDay } from '../../utils';
 
 interface DateInfo {
@@ -38,11 +38,11 @@ const props = defineProps<{
     selected: boolean;
     currentDay: boolean;
     isOtherMonth: boolean;
-    plants: FullPlantsDto[];
+    plants: PlantWithWateringsModel[];
 }>();
 
 const emits = defineEmits(['clicked']);
-const plantsOnDay = ref<FullPlantsDto[]>([]);
+const plantsOnDay = ref<PlantWithWateringsModel[]>([]);
 const themeVars = useThemeVars();
 const mainImage = ref<string | null>(null);
 
@@ -52,9 +52,9 @@ const onClick = () => {
 };
 
 const getFirstPlantImage = () => {
-    const plant = plantsOnDay.value.find(p => p.img !== null);
+    const plant = plantsOnDay.value.find(p => p.image !== null);
     if (plant !== undefined) {
-        return plant.img;
+        return plant.image;
     }
     return null;
 }

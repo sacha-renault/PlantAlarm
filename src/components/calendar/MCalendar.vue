@@ -62,12 +62,12 @@
 import { ArrowRight28Filled as ForwardIcon, ArrowLeft28Filled as BackwardIcon, Filter16Filled as FIlterIcon } from '@vicons/fluent'
 import MCalendarItem from './MCalendarItem.vue';
 import { ref, computed } from 'vue';
-import type { FullPlantsDto } from '../../api';
+import type { PlantWithWateringsModel } from '../../api';
 
 const today = new Date();
 const currentMonth = ref(new Date());
 const selectedDate = ref<Date | null>(null);
-const { plants } = defineProps<{ plants: FullPlantsDto[] }>()
+const { plants } = defineProps<{ plants: PlantWithWateringsModel[] }>()
 const plantSelected = ref(plants.map(_ => true));
 const emits = defineEmits(['dayClicked']);
 

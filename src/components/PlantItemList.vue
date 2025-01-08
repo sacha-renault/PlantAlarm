@@ -9,7 +9,7 @@
             swipe-threshold="20%">
 
             <n-flex align="center" justify="space-evenly" class="swipe-item-template">
-                <n-avatar round :src="plant.img" />
+                <n-avatar round :src="plant.image" />
                 <n-divider vertical />
                 <n-space> {{ plant.name }} </n-space>
                 <n-divider vertical />
@@ -28,14 +28,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { FullPlantsDto } from '../api';
+import type { PlantWithWateringsModel } from '../interfaces/models';
 import SwipableListItem from './SwipableListItem.vue';
 import { Timer16Regular as TimerIcon, Drop20Regular as WaterIcon } from '@vicons/fluent'
 import { useThemeVars } from 'naive-ui';
 
 const themeVars = useThemeVars();
 const show = ref(true);
-const { plant } = defineProps<{plant: FullPlantsDto}>();
+const { plant } = defineProps<{plant: PlantWithWateringsModel}>();
 
 const handleSwipe = (_: string) => {
     setTimeout(() => show.value = false, 450);

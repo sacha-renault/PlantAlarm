@@ -1,15 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { PlantDto } from "./interfaces/dto";
-import type { PlantModel } from "./interfaces/models";
+import type { PlantModel, PlantWithWateringsModel } from "./interfaces/models";
 
-export interface FullPlantsDto {
-    id: number;
-    name: string;
-    lastWatered: Date;
-    img: string | null;
-    dayInterval: number;
-    waterQuantity: number;
-}
 
 const mockedPlants = [
     {
@@ -17,7 +9,7 @@ const mockedPlants = [
         name: "Orchidée 1",
         lastWatered: new Date(Date.now()),
         dayInterval: 2,
-        img: null,
+        image: null,
         waterQuantity: 200
     },
     {
@@ -25,15 +17,17 @@ const mockedPlants = [
         name: "Orchidée 2",
         lastWatered: new Date(Date.now()),
         dayInterval: 4,
-        img: "https://townhouseflowers.com.au/wp-content/uploads/2022/04/phally.jpg.webp",
+        image: "https://townhouseflowers.com.au/wp-content/uploads/2022/04/phally.jpg.webp",
         waterQuantity: 200
     },
 ]
 
 class Api {
-    async getPlantsWithRecentWatering(): Promise<FullPlantsDto[]> {
+    async getPlantsWithRecentWatering(): Promise<PlantWithWateringsModel[]> {
         return mockedPlants;
     }
+
+    // async getPlantWithNextWatering(): Promise<>
 
     async addPlant(plant: PlantDto): Promise<PlantModel> {
         return await invoke<PlantModel>('add_plant', { plantDto: plant });
