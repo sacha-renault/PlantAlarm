@@ -11,7 +11,9 @@
                     <swipable-list-item
                         @swiped-left="handleSwipe(index, 'left')"
                         @swiped-right="handleSwipe(index, 'left')"
+                        @swipe-animation-over="console.log('animation over')"
                         :animation-duration="0.45"
+                        :replace-transition-duration="0.25"
                         swipe-threshold="20%">
 
                         <n-flex align="center" justify="space-evenly">

@@ -5,16 +5,22 @@
             @touchmove="touchHandlers.onTouchMove" @touchend="touchHandlers.onTouchEnd"
             @mousedown="mouseHandlers.onMouseDown" @mousemove="mouseHandlers.onMouseMove"
             @mouseup="mouseHandlers.onMouseUp" :style="{ transform: 'translateX(' + currentX.toString() + 'px)' }"
-            class="wf swipable-container">
+            class="wf swipable-container" :class="{'swipable-container-swiping' : isDragging }">
             <slot name="default"/>
         </div>
+
+        <!-- Under swipe -->
         <div class="under-swipe-container">
-            <div class="under-swipe-part" :class="[{ 'swiping': isSwipingLeft }]">
+
+            <!-- Left part -->
+            <div class="under-swipe-part" :class="[{ 'under-swipe-visible': isSwipingLeft }]">
                 <div class="icon-small icon-grow" :class="[{ 'swiped': isSwipedLeft }]">
                     <slot name="icon-left"/>
                 </div>
             </div>
-            <div class="under-swipe-part " :class="[{ 'swiping': isSwipingRight }]">
+
+            <!-- Right part -->
+            <div class="under-swipe-part " :class="[{ 'under-swipe-visible': isSwipingRight }]">
                 <div class="icon-small icon-grow" :class="[{ 'swiped': isSwipedRight }]">
                     <slot name="icon-right"/>
                 </div>
@@ -49,6 +55,10 @@ export default {
         swipeAnimation: {
             type: String,
             default: 'growAndSpin'
+        },
+        replaceTransitionDuration: {
+            type: Number,
+            default: 0.3
         }
     },
     methods: {
@@ -64,9 +74,19 @@ export default {
             const deltaX = x - this.startX;
             const absDeltaX = Math.abs(deltaX);
 
+            // Handle not swiping too far
             if (this.maxSwipePx > absDeltaX) {
                 this.absX = absDeltaX;
                 this.currentX = deltaX;
+            }
+
+            // Handle direction swipe
+            if (deltaX < 0) {
+                this.isSwipingRight = true;
+                this.isSwipingLeft = false;
+            } else if (deltaX > 0) {
+                this.isSwipingLeft = true;
+                this.isSwipingRight = false;
             }
         },
 
@@ -90,15 +110,21 @@ export default {
                 this.currentX = 0;
                 this.isSwipedLeft = false;
                 this.isSwipedRight = false;
+                this.$emit('swipeAnimationOver');
+
+                setTimeout(() => {
+                    this.isSwipingRight = false;
+                    this.isSwipingLeft = false;
+                }, this.replaceTransitionDuration * 1000);
             }, this.animationDuration * 1000);
         },
+
         parseStringAsPx(value: string): number {
             const element = this.$el;
             if (value.endsWith('px')) {
                 return parseInt(value.replace('px', ''));
             } else if (value.endsWith('%')) {
                 const elementWidth = element ? element.clientWidth : 0;
-                console.log(elementWidth);
                 return (parseInt(value.replace('%', ''), 10) / 100) * elementWidth;
             } else {
                 return 0;
@@ -124,11 +150,11 @@ export default {
             absX: 0,
             startX: 0,
             isDragging: false,
+            isSwipingRight: false,
+            isSwipingLeft: false
         }
     },
     computed: {
-        isSwipingRight() { return this.currentX < 0 },
-        isSwipingLeft()  { return this.currentX > 0 },
         leftUnderColor() { return this.leftColor ?? this.themeVars.warningColor; },
         rightUnderColor(){ return this.rightColor ?? this.themeVars.infoColor; },
         maxSwipePx() { return this.parseStringAsPx(this.maxSwipe) },
@@ -147,12 +173,18 @@ export default {
 }
 
 .swipable-container {
+    --transition-duration: v-bind('replaceTransitionDuration');
     padding: 0.5rem 1rem;
     border: 1px solid;
     border-radius: v-bind('themeVars.borderRadius');
     border-color: v-bind('themeVars.borderColor');
     background-color: v-bind('themeVars.bodyColor');
     z-index: 100;
+    transition: calc(var(--transition-duration) * 1s);
+}
+
+.swipable-container-swiping {
+    transition: unset;
 }
 
 .under-swipe-container {
@@ -201,7 +233,7 @@ export default {
 }
 
 /* Show the button when swiping */
-.swiping {
+.under-swipe-visible {
     display: flex;
 }
 
