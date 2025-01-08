@@ -7,8 +7,20 @@
         <n-flex vertical class="wf" align="center">
             <h2> {{ displayDay() }} </h2>
             <n-flex class="wf" style="gap: 0px;" v-if="plants.length !== 0">
-                <swipable-list-item v-for="plant in plants" :name="plant.name" :water-qty="plant.waterQuantity"
-                    :img="plant.img ?? ''" @swiped-left="console.log('swiped left')" />
+                <swipable-list-item v-for="plant in plants" @swiped-left="console.log('swiped left')" :animation-duration="1">
+                    <n-avatar round :src="plant.img" />
+                    <n-divider vertical />
+                    <n-space> {{ plant.name }} </n-space>
+                    <n-divider vertical />
+                    <n-space> {{ plant.waterQuantity }} mL </n-space>
+
+                    <template #icon-left>
+                        <TimerIcon style="color: black"/>
+                    </template>
+                    <template #icon-right>
+                        <WaterIcon style="color: black"/>
+                    </template>
+                </swipable-list-item>
             </n-flex>
             <n-divider style="width:50%" />
         </n-flex>
@@ -21,6 +33,7 @@ import { onMounted, ref } from 'vue';
 import SwipableListItem from '../components/SwipableListItem.vue';
 import { calcDayDifference, filterPlantsAtDay } from '../utils';
 import { api, FullPlantsDto } from '../api';
+import { Timer16Regular as TimerIcon, Drop20Regular as WaterIcon } from '@vicons/fluent'
 
 const selectedDay = ref(new Date(Date.now()));
 const today = ref(new Date(Date.now()));
@@ -44,13 +57,6 @@ const displayDay = () => {
             return 'In ' + dayDiff.toString() + ' days';
         }
     }
-}
-const onDateChanged = async () => {
-    // this force a reset of all SwipableListItem
-    plants.value = [];
-
-    // then we assign new values
-    plants.value = filterPlantsAtDay(await api.getPlantsWithRecentWatering(), selectedDay.value);
 }
 
 onMounted(async () => {

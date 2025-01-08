@@ -1,118 +1,147 @@
 <template>
     <n-collapse-transition :show="show">
-        <n-flex class="wf main-swipable-container">
+        <n-flex class="wf main-swipable-container" ref="mainContainer">
             <!-- Main display -->
             <n-flex align="center" justify="space-evenly" @touchstart="touchHandlers.onTouchStart"
                 @touchmove="touchHandlers.onTouchMove" @touchend="touchHandlers.onTouchEnd"
                 @mousedown="mouseHandlers.onMouseDown" @mousemove="mouseHandlers.onMouseMove"
                 @mouseup="mouseHandlers.onMouseUp" :style="{ transform: 'translateX(' + currentX.toString() + 'px)' }"
                 class="wf swipable-container">
-                <n-avatar round :src="img" />
-                <n-divider vertical />
-                <n-space> {{ name }} </n-space>
-                <n-divider vertical />
-                <n-space> {{ waterQty }} mL </n-space>
+                <slot name="default"/>
             </n-flex>
             <div class="under-swipe-container">
                 <div class="under-swipe-part" :class="[{ 'swiping': isSwipingLeft }]">
-                    <TimerIcon class="icon-small icon-grow"
-                        :class="[{ 'swiped': isSwipedLeft }]" />
+                    <div class="icon-small icon-grow" :class="[{ 'swiped': isSwipedLeft }]">
+                        <slot name="icon-left"/>
+                    </div>
                 </div>
-                <div :class="[{ 'swiping': isSwipingRight, 'under-swipe-part': true }]">
-                    <WaterIcon class="icon-small icon-grow" :class="[{ 'swiped': isSwipedRight }]" />
+                <div class="under-swipe-part " :class="[{ 'swiping': isSwipingRight }]">
+                    <div class="icon-small icon-grow" :class="[{ 'swiped': isSwipedRight }]">
+                        <slot name="icon-right"/>
+                    </div>
                 </div>
             </div>
         </n-flex>
     </n-collapse-transition>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import { useMessage, useThemeVars } from 'naive-ui';
-import { Timer16Regular as TimerIcon, Drop20Regular as WaterIcon } from '@vicons/fluent'
-import { ref, computed } from 'vue';
 
-const themeVars = useThemeVars();
-const message = useMessage();
+export default {
+    props: {
+        leftColor: {
+            type: String,
+        },
+        rightColor: {
+            type: String,
+        },
+        animationDuration: {
+            type: Number,
+            default: 0.5
+        },
+        maxSwipe: {
+            type: String,
+            default: '50%'
+        },
+        swipeThreshold: {
+            type: String,
+            default: '45%'
+        },
+        swipeAnimation: {
+            type: String,
+            default: 'growAndSpin'
+        }
+    },
+    methods: {
+        // Swip methods
+        handleDragStart(x: number) {
+            this.startX = x;
+            this.isDragging = true;
+        },
 
-// min and max heigh of icone under the main structure
-const animationTime = 0.5;
-const threshold = 75;
-const maxSwipe = 150;
-const leftColor = ref(themeVars.value.warningColor);
-const rightColor = ref(themeVars.value.infoColor);
+        handleDragMove(x: number) {
+            if (!this.isDragging) return;
 
-// vue ref
-const absX = ref(0);
-const startX = ref(0);
-const currentX = ref(0);
-const isDragging = ref(false);
-const emits = defineEmits(['swipedLeft', 'swipedRight'])
-const show = ref(true);
-const isSwipedRight = ref(false);
-const isSwipedLeft = ref(false);
-const isSwipingRight = computed(() => currentX.value < 0);
-const isSwipingLeft = computed(() => currentX.value > 0);
+            const deltaX = x - this.startX;
+            const absDeltaX = Math.abs(deltaX);
 
-// see props
-const { name, waterQty, img } = defineProps<{ name: string, waterQty: number, img: string }>()
+            if (this.maxSwipePx > absDeltaX) {
+                this.absX = absDeltaX;
+                this.currentX = deltaX;
+            }
+        },
 
+        handleDragEnd () {
+            this.isDragging = false;
 
-// Swip methods
-const handleDragStart = (x: number) => {
-    startX.value = x;
-    isDragging.value = true;
-};
+            if (Math.abs(this.currentX) < this.thresholdPx) {
+                this.currentX = 0;
+                return;
+            }
 
-const handleDragMove = (x: number) => {
-    if (!isDragging.value) return;
+            if (this.currentX < 0) {
+                this.isSwipedRight = true;
+                this.$emit('swipedRight');
+                this.message.success('right')
+            } else {
+                this.isSwipedLeft = true;
+                this.$emit('swipedLeft');
+                this.message.success('left')
+            }
 
-    const deltaX = x - startX.value;
-    const absDeltaX = Math.abs(deltaX);
-
-    if (maxSwipe > absDeltaX) {
-        absX.value = absDeltaX;
-        currentX.value = deltaX;
+            setTimeout(() => {
+                this.currentX = 0;
+                this.isSwipedLeft = false;
+                this.isSwipedRight = false;
+                this.show = false;
+            }, this.animationDuration * 1000);
+        },
+        parseStringAsPx(value: string): number {
+            const element = this.$el;
+            if (value.endsWith('px')) {
+                return parseInt(value.replace('px', ''));
+            } else if (value.endsWith('%')) {
+                const elementWidth = element ? element.clientWidth : 0;
+                console.log(elementWidth);
+                return (parseInt(value.replace('%', ''), 10) / 100) * elementWidth;
+            } else {
+                return 0;
+            }
+        }
+    },
+    data() {
+        return  {
+            mouseHandlers: {
+                onMouseDown: (e: MouseEvent) => this.handleDragStart(e.clientX),
+                onMouseMove: (e: MouseEvent) => this.handleDragMove(e.clientX),
+                onMouseUp: () => this.handleDragEnd(),
+            },
+            touchHandlers: {
+                onTouchStart: (e: TouchEvent) => this.handleDragStart(e.touches[0].clientX),
+                onTouchMove: (e: TouchEvent) => this.handleDragMove(e.touches[0].clientX),
+                onTouchEnd: () => this.handleDragEnd()
+            },
+            themeVars: useThemeVars(),
+            isSwipedRight: false,
+            isSwipedLeft: false,
+            currentX: 0,
+            absX: 0,
+            startX: 0,
+            isDragging: false,
+            show: true,
+            message: useMessage(),
+        }
+    },
+    computed: {
+        isSwipingRight() { return this.currentX < 0 },
+        isSwipingLeft()  { return this.currentX > 0 },
+        leftUnderColor() { return this.leftColor ?? this.themeVars.warningColor; },
+        rightUnderColor(){ return this.rightColor ?? this.themeVars.infoColor; },
+        maxSwipePx() { return this.parseStringAsPx(this.maxSwipe) },
+        thresholdPx() { return this.parseStringAsPx(this.swipeThreshold) }
     }
-};
-
-const handleDragEnd = () => {
-    isDragging.value = false;
-
-    if (Math.abs(currentX.value) < threshold) {
-        currentX.value = 0;
-        return;
-    }
-
-    if (currentX.value < 0) {
-        isSwipedRight.value = true;
-        emits('swipedRight');
-        message.success('right')
-    } else {
-        isSwipedLeft.value = true;
-        emits('swipedLeft');
-        message.success('left')
-    }
-
-    setTimeout(() => {
-        currentX.value = 0;
-        isSwipedLeft.value = false;
-        isSwipedRight.value = false;
-        show.value = false;
-    }, animationTime * 1000);
-};
-
-// Event handlers that use the core drag logic
-const touchHandlers = {
-    onTouchStart: (e: TouchEvent) => handleDragStart(e.touches[0].clientX),
-    onTouchMove: (e: TouchEvent) => handleDragMove(e.touches[0].clientX),
-    onTouchEnd: () => handleDragEnd()
-};
-
-const mouseHandlers = {
-    onMouseDown: (e: MouseEvent) => handleDragStart(e.clientX),
-    onMouseMove: (e: MouseEvent) => handleDragMove(e.clientX),
-    onMouseUp: () => handleDragEnd(),
-};
+}
 
 </script>
 
@@ -163,12 +192,12 @@ const mouseHandlers = {
 
     &:first-child {
         justify-content: flex-start;
-        background-color: v-bind('leftColor');
+        background-color: v-bind('leftUnderColor');
     }
 
     &:last-child {
         justify-content: flex-end;
-        background-color: v-bind('rightColor');
+        background-color: v-bind('rightUnderColor');
     }
 }
 
@@ -184,8 +213,12 @@ const mouseHandlers = {
 }
 
 .swiped {
+    --animation-duration: v-bind('animationDuration');
     display: flex;
-    animation: growAndSpin .5s ease infinite;
+    animation-name: growAndSpin;
+    animation-duration: calc(var(--animation-duration) * 1s);
+    animation-iteration-count: infinite;
+    animation-timing-function: ease;
 }
 
 @keyframes growAndSpin {
