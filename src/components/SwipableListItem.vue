@@ -14,15 +14,13 @@
                 <n-space> {{ waterQty }} mL </n-space>
             </n-flex>
             <div class="under-swipe-container">
-                <n-button class="under-swipe-part" :class="[{ 'swiping': isSwipingLeft }]" primary type="warning"
-                    :bordered="false">
+                <div class="under-swipe-part" :class="[{ 'swiping': isSwipingLeft }]">
                     <TimerIcon class="icon-small icon-grow"
-                        :class="[{ 'swiped': isSwipedLeft, 'swiping': isSwipingLeft }]" />
-                </n-button>
-                <n-button class="under-swipe-part" :class="[{ 'swiping': isSwipingRight }]" primary type="info"
-                    :bordered="false">
+                        :class="[{ 'swiped': isSwipedLeft }]" />
+                </div>
+                <div :class="[{ 'swiping': isSwipingRight, 'under-swipe-part': true }]">
                     <WaterIcon class="icon-small icon-grow" :class="[{ 'swiped': isSwipedRight }]" />
-                </n-button>
+                </div>
             </div>
         </n-flex>
     </n-collapse-transition>
@@ -31,26 +29,29 @@
 <script setup lang="ts">
 import { useMessage, useThemeVars } from 'naive-ui';
 import { Timer16Regular as TimerIcon, Drop20Regular as WaterIcon } from '@vicons/fluent'
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const themeVars = useThemeVars();
 const message = useMessage();
 
 // min and max heigh of icone under the main structure
 const animationTime = 0.5;
-const threshold = 150;
+const threshold = 75;
+const maxSwipe = 150;
+const leftColor = ref(themeVars.value.warningColor);
+const rightColor = ref(themeVars.value.infoColor);
 
 // vue ref
-const isSwipedRight = ref(false);
-const isSwipedLeft = ref(false);
-const isSwipingRight = ref(false);
-const isSwipingLeft = ref(false);
 const absX = ref(0);
 const startX = ref(0);
 const currentX = ref(0);
 const isDragging = ref(false);
 const emits = defineEmits(['swipedLeft', 'swipedRight'])
 const show = ref(true);
+const isSwipedRight = ref(false);
+const isSwipedLeft = ref(false);
+const isSwipingRight = computed(() => currentX.value < 0);
+const isSwipingLeft = computed(() => currentX.value > 0);
 
 // see props
 const { name, waterQty, img } = defineProps<{ name: string, waterQty: number, img: string }>()
@@ -66,15 +67,11 @@ const handleDragMove = (x: number) => {
     if (!isDragging.value) return;
 
     const deltaX = x - startX.value;
-    if (Math.abs(deltaX) <= threshold) {
-        currentX.value = deltaX;
-        absX.value = Math.abs(deltaX);
-    }
+    const absDeltaX = Math.abs(deltaX);
 
-    if (deltaX < 0) {
-        isSwipingRight.value = true;
-    } else {
-        isSwipingLeft.value = true;
+    if (maxSwipe > absDeltaX) {
+        absX.value = absDeltaX;
+        currentX.value = deltaX;
     }
 };
 
@@ -99,8 +96,6 @@ const handleDragEnd = () => {
     setTimeout(() => {
         currentX.value = 0;
         isSwipedLeft.value = false;
-        isSwipingLeft.value = false;
-        isSwipingRight.value = false;
         isSwipedRight.value = false;
         show.value = false;
     }, animationTime * 1000);
@@ -144,15 +139,18 @@ const mouseHandlers = {
     position: absolute;
     width: 100%;
     height: 100%;
+    border: none;
     border-radius: v-bind('themeVars.borderRadius');
     z-index: 0;
     flex-flow: nowrap;
     margin: 0;
     padding: 0;
+    overflow: hidden;
 }
 
 .under-swipe-part {
     box-sizing: border-box;
+    border-radius: v-bind('themeVars.borderRadius');
     width: 100%;
     height: 100%;
     border-color: transparent;
@@ -162,16 +160,22 @@ const mouseHandlers = {
     padding: 1rem;
     position: absolute;
     left: 0;
+
+    &:first-child {
+        justify-content: flex-start;
+        background-color: v-bind('leftColor');
+    }
+
+    &:last-child {
+        justify-content: flex-end;
+        background-color: v-bind('rightColor');
+    }
 }
 
-/* First button (left swipe) */
-.under-swipe-part:first-child {
-    justify-content: flex-start;
-}
-
-/* Second button (right swipe) */
-.under-swipe-part:last-child {
-    justify-content: flex-end;
+.icon-grow {
+    --base-scale: calc(1 + v-bind(absX) / 200);
+    max-height: 100%;
+    transform: scale(var(--base-scale));
 }
 
 /* Show the button when swiping */
@@ -179,22 +183,18 @@ const mouseHandlers = {
     display: flex;
 }
 
-.icon-grow {
-    --base-scale: calc(1 + v-bind(absX) / 200);
-    transform: scale(var(--base-scale));
-}
-
 .swiped {
+    display: flex;
     animation: growAndSpin .5s ease infinite;
 }
 
 @keyframes growAndSpin {
     0% {
-        transform: scale(var(--base-scale)) rotate(0deg);
+        transform: scale(var(--base-scale));
     }
 
     50% {
-        transform: scale(calc(var(--base-scale) * 0.75));
+        transform: scale(calc(var(--base-scale) * 0.65));
     }
 
     100% {
