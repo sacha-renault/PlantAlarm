@@ -1,32 +1,30 @@
 <template>
-    <n-collapse-transition :show="show">
-        <n-flex class="wf main-swipable-container" ref="mainContainer">
-            <!-- Main display -->
-            <n-flex align="center" justify="space-evenly" @touchstart="touchHandlers.onTouchStart"
-                @touchmove="touchHandlers.onTouchMove" @touchend="touchHandlers.onTouchEnd"
-                @mousedown="mouseHandlers.onMouseDown" @mousemove="mouseHandlers.onMouseMove"
-                @mouseup="mouseHandlers.onMouseUp" :style="{ transform: 'translateX(' + currentX.toString() + 'px)' }"
-                class="wf swipable-container">
-                <slot name="default"/>
-            </n-flex>
-            <div class="under-swipe-container">
-                <div class="under-swipe-part" :class="[{ 'swiping': isSwipingLeft }]">
-                    <div class="icon-small icon-grow" :class="[{ 'swiped': isSwipedLeft }]">
-                        <slot name="icon-left"/>
-                    </div>
-                </div>
-                <div class="under-swipe-part " :class="[{ 'swiping': isSwipingRight }]">
-                    <div class="icon-small icon-grow" :class="[{ 'swiped': isSwipedRight }]">
-                        <slot name="icon-right"/>
-                    </div>
+    <n-flex class="wf main-swipable-container" ref="mainContainer">
+        <!-- Main display -->
+        <div @touchstart="touchHandlers.onTouchStart"
+            @touchmove="touchHandlers.onTouchMove" @touchend="touchHandlers.onTouchEnd"
+            @mousedown="mouseHandlers.onMouseDown" @mousemove="mouseHandlers.onMouseMove"
+            @mouseup="mouseHandlers.onMouseUp" :style="{ transform: 'translateX(' + currentX.toString() + 'px)' }"
+            class="wf swipable-container">
+            <slot name="default"/>
+        </div>
+        <div class="under-swipe-container">
+            <div class="under-swipe-part" :class="[{ 'swiping': isSwipingLeft }]">
+                <div class="icon-small icon-grow" :class="[{ 'swiped': isSwipedLeft }]">
+                    <slot name="icon-left"/>
                 </div>
             </div>
-        </n-flex>
-    </n-collapse-transition>
+            <div class="under-swipe-part " :class="[{ 'swiping': isSwipingRight }]">
+                <div class="icon-small icon-grow" :class="[{ 'swiped': isSwipedRight }]">
+                    <slot name="icon-right"/>
+                </div>
+            </div>
+        </div>
+    </n-flex>
 </template>
 
 <script lang="ts">
-import { useMessage, useThemeVars } from 'naive-ui';
+import { useThemeVars } from 'naive-ui';
 
 export default {
     props: {
@@ -83,18 +81,15 @@ export default {
             if (this.currentX < 0) {
                 this.isSwipedRight = true;
                 this.$emit('swipedRight');
-                this.message.success('right')
             } else {
                 this.isSwipedLeft = true;
                 this.$emit('swipedLeft');
-                this.message.success('left')
             }
 
             setTimeout(() => {
                 this.currentX = 0;
                 this.isSwipedLeft = false;
                 this.isSwipedRight = false;
-                this.show = false;
             }, this.animationDuration * 1000);
         },
         parseStringAsPx(value: string): number {
@@ -129,8 +124,6 @@ export default {
             absX: 0,
             startX: 0,
             isDragging: false,
-            show: true,
-            message: useMessage(),
         }
     },
     computed: {
