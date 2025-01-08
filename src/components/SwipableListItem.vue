@@ -174,11 +174,6 @@ export default {
 
 .swipable-container {
     --transition-duration: v-bind('replaceTransitionDuration');
-    padding: 0.5rem 1rem;
-    border: 1px solid;
-    border-radius: v-bind('themeVars.borderRadius');
-    border-color: v-bind('themeVars.borderColor');
-    background-color: v-bind('themeVars.bodyColor');
     z-index: 100;
     transition: calc(var(--transition-duration) * 1s);
 }

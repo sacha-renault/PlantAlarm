@@ -16,7 +16,7 @@
                         :replace-transition-duration="0.25"
                         swipe-threshold="20%">
 
-                        <n-flex align="center" justify="space-evenly">
+                        <n-flex align="center" justify="space-evenly" class="swipe-item-template">
                             <n-avatar round :src="plant.img" />
                             <n-divider vertical />
                             <n-space> {{ plant.name }} </n-space>
@@ -45,7 +45,9 @@ import SwipableListItem from '../components/SwipableListItem.vue';
 import { calcDayDifference, filterPlantsAtDay } from '../utils';
 import { api, FullPlantsDto } from '../api';
 import { Timer16Regular as TimerIcon, Drop20Regular as WaterIcon } from '@vicons/fluent'
+import { useThemeVars } from 'naive-ui';
 
+const themeVars = useThemeVars();
 const selectedDay = ref(new Date(Date.now()));
 const today = ref(new Date(Date.now()));
 const plants = ref<FullPlantsDto[]>([]);
@@ -82,7 +84,13 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.bottom-paginator {
-    margin: auto 12rem;
+.swipe-item-template {
+    padding: 0.5rem 1rem;
+    border: 1px solid;
+    border-radius: v-bind('themeVars.borderRadius');
+    border-color: v-bind('themeVars.borderColor');
+    background-color: v-bind('themeVars.bodyColor');
 }
+
+
 </style>
