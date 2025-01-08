@@ -4,6 +4,12 @@ export interface PlantModel extends PlantDto {
     id: number;
 }
 
+export interface WateringModel {
+    id: number;
+    plantId: number;
+    dateWatered: Date;
+}
+
 export interface PlantWithWateringsModel extends PlantModel {
-    lastWatered: Date;
+    waterings: WateringModel[];
 }

@@ -40,7 +40,8 @@ export const formatDateWithWeekday = (date: Date | any): string => {
 export function filterPlantsAtDay(plants: PlantWithWateringsModel[], date: Date): PlantWithWateringsModel[] {
     const plantsAtDay: PlantWithWateringsModel[] = []
     for (const plant of plants) {
-        const dayDiff = calcDayDifference(date, plant.lastWatered);
+        const lastWatered = plant.waterings.map(w => w.dateWatered).reduce((a, b) => a > b ? a : b);
+        const dayDiff = calcDayDifference(date, lastWatered);
         if (dayDiff % plant.dayInterval === 0) {
             plantsAtDay.push(plant);
         }

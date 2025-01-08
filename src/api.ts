@@ -7,18 +7,26 @@ const mockedPlants = [
     {
         id: 0,
         name: "Orchidée 1",
-        lastWatered: new Date(Date.now()),
         dayInterval: 2,
         image: null,
-        waterQuantity: 200
+        waterQuantity: 200,
+        waterings: [{
+            id: 1,
+            plantId: 1,
+            dateWatered: new Date(Date.now())
+        }]
     },
     {
         id: 1,
         name: "Orchidée 2",
-        lastWatered: new Date(Date.now()),
         dayInterval: 4,
         image: "https://townhouseflowers.com.au/wp-content/uploads/2022/04/phally.jpg.webp",
-        waterQuantity: 200
+        waterQuantity: 200,
+        waterings: [{
+            id: 1,
+            plantId: 1,
+            dateWatered: new Date(Date.now())
+        }]
     },
 ]
 
@@ -26,8 +34,6 @@ class Api {
     async getPlantsWithRecentWatering(): Promise<PlantWithWateringsModel[]> {
         return mockedPlants;
     }
-
-    // async getPlantWithNextWatering(): Promise<>
 
     async addPlant(plant: PlantDto): Promise<PlantModel> {
         return await invoke<PlantModel>('add_plant', { plantDto: plant });

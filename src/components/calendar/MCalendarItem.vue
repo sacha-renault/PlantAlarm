@@ -9,8 +9,8 @@
 
         <n-flex vertical style="height: 100%;">
             <n-flex align="center" justify="space-between">
-                <div class="cell-day">{{ date.dayOfMonth }}</div>
-                <div>{{ getDayName(date.date) }}</div>
+                <div class="cell-day">{{ dateInfo.dayOfMonth }}</div>
+                <div class="date-string">{{ getDayName(dateInfo.date) }}</div>
             </n-flex>
             <div class="calendar-item-content">
                 <n-badge v-if="plantsOnDay.length !== 0" :value="plantsOnDay.length - 1">
@@ -25,7 +25,7 @@
 import { useThemeVars } from 'naive-ui'
 import { onMounted, ref } from 'vue';
 import type { PlantWithWateringsModel } from "../../interfaces/models";
-import { filterPlantsAtDay } from '../../utils';
+import { calcDayDifference } from '../../utils';
 
 interface DateInfo {
     id: string;
@@ -34,7 +34,7 @@ interface DateInfo {
 }
 
 const props = defineProps<{
-    date: DateInfo;
+    dateInfo: DateInfo;
     selected: boolean;
     currentDay: boolean;
     isOtherMonth: boolean;
@@ -48,13 +48,13 @@ const mainImage = ref<string | null>(null);
 
 // Methods
 const onClick = () => {
-    emits('clicked', props.date.date);
+    emits('clicked', props.dateInfo.date);
 };
 
 const getFirstPlantImage = () => {
-    const plant = plantsOnDay.value.find(p => p.image !== null);
-    if (plant !== undefined) {
-        return plant.image;
+    const plantWithImage = plantsOnDay.value.find(p => p.image !== null);
+    if (plantWithImage !== undefined) {
+        return plantWithImage.image;
     }
     return null;
 }
@@ -65,7 +65,8 @@ const getDayName = (date: Date): string => {
 
 onMounted(async () => {
     // reset to be sure
-    plantsOnDay.value = filterPlantsAtDay(props.plants, props.date.date);
+    plantsOnDay.value = props.plants.filter(p =>
+        p.waterings.some(w => calcDayDifference(w.dateWatered, props.dateInfo.date) === 0));
     mainImage.value = getFirstPlantImage();
 })
 </script>
@@ -139,8 +140,8 @@ onMounted(async () => {
 .cell-day {
     aspect-ratio: 1 / 1;
     border-radius: 50%;
-    width: 1.8em;
-    height: 1.8em;
+    width: 1.3em;
+    height: 1.3em;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -153,6 +154,10 @@ onMounted(async () => {
 
 .other-month {
     color: v-bind('themeVars.textColorDisabled');
+}
+
+.date-string {
+    font-size: 1rem;
 }
 
 .calendar-item-content {

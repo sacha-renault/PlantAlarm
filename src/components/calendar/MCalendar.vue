@@ -32,7 +32,7 @@
         </n-layout-header>
         <n-layout>
             <div class="calendar-grid-layout">
-                <m-calendar-item v-for="date in calendarDays" :key="date.id" :date="date"
+                <m-calendar-item v-for="date in calendarDays" :key="date.id" :dateInfo="date"
                     :selected="selectedDate !== null && isSameDay(selectedDate, date.date)"
                     :current-day="isSameDay(today, date.date)" :is-other-month="!isSameMonth(currentMonth, date.date)"
                     @clicked="handleClick" :plants="plants" />
@@ -62,7 +62,7 @@
 import { ArrowRight28Filled as ForwardIcon, ArrowLeft28Filled as BackwardIcon, Filter16Filled as FIlterIcon } from '@vicons/fluent'
 import MCalendarItem from './MCalendarItem.vue';
 import { ref, computed } from 'vue';
-import type { PlantWithWateringsModel } from '../../api';
+import type { PlantWithWateringsModel } from '../../interfaces/models.ts';
 
 const today = new Date();
 const currentMonth = ref(new Date());

@@ -27,7 +27,7 @@ import {
 } from '@vicons/fluent'
 import { NAvatar, NButton } from 'naive-ui';
 import { filterPlantsAtDay } from '../../utils';
-import { PlantWithWateringsModel } from '../../api';
+import type { PlantWithWateringsModel } from '../../interfaces/models.ts';
 import { onMounted, ref, watch, h } from 'vue';
 import { formatDateWithWeekday } from '../../utils';
 
