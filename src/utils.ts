@@ -59,3 +59,39 @@ export function addDays(date: Date, days: number): Date {
     result.setDate(result.getDate() + days);
     return result;
 }
+
+/**
+ * Formats a given date into a human-readable string based on its relation to the current date.
+ *
+ * @param {Date} date - The date to format.
+ * @returns {string} A formatted string representing the date:
+ * - "Today" if the date is today.
+ * - "Tomorrow" if the date is tomorrow.
+ * - "Yesterday" if the date is yesterday.
+ * - "Next [weekday]" if the date is within the next 7 days and in the future.
+ * - "Last [weekday]" if the date is within the last 7 days and in the past.
+ * - "On dd/MM" if the date is more than 7 days away in either direction.
+ */
+export function formatDayString(date: Date): string {
+    const now = new Date(Date.now());
+    const dayDiff = calcDayDifference(date, now);
+    const isFuture = now < date;
+
+    if (dayDiff === 0) {
+        return 'Today';
+    } else if (dayDiff === 1 && isFuture) {
+        return 'Tomorrow';
+    } else if (dayDiff === 1) {
+        return 'Yesterday';
+    }
+
+    const dayString = date?.toLocaleDateString('en-US', { weekday: 'long' });
+    const dateString = date?.toLocaleString('en-UK', { day: '2-digit', month: '2-digit' }); // UK for day / month
+    const prefix = isFuture ? 'Next ' : 'Last ';
+
+    if (dayDiff <= 7) {
+        return prefix + dayString; // Next Tuesday or Last Tuesday
+    } else {
+        return 'On ' + dateString; // On 25/12 or similar
+    }
+}
