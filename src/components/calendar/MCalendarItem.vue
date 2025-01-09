@@ -13,7 +13,8 @@
                 <div class="date-string">{{ getDayName(dateInfo.date) }}</div>
             </n-flex>
             <div class="calendar-item-content">
-                <n-badge v-if="plantsOnDay.length !== 0" :value="plantsOnDay.length - 1">
+                <n-skeleton v-if="loading" round size="small" />
+                <n-badge v-else-if="plantsOnDay.length !== 0" :value="plantsOnDay.length - 1">
                     <n-avatar round size="small" :src="mainImage" object-fit="cover" />
                 </n-badge>
             </div>
@@ -39,6 +40,7 @@ const props = defineProps<{
     currentDay: boolean;
     isOtherMonth: boolean;
     plants: PlantWithWateringsModel[];
+    loading: boolean
 }>();
 
 const emits = defineEmits(['clicked']);
@@ -68,10 +70,6 @@ const mountFn = async (plants: PlantWithWateringsModel[], date: Date) => {
     plantsOnDay.value = plants.filter(p =>
         p.waterings.some(w => calcDayDifference(w.dateWatered, date) === 0));
     mainImage.value = getFirstPlantImage();
-
-    if (plantsOnDay.value.length !== 0) {
-        console.log(props.dateInfo.date);
-    }
 }
 
 onMounted(async () => await mountFn(props.plants, props.dateInfo.date));

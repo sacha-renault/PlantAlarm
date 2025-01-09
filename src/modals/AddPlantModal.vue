@@ -116,10 +116,9 @@ const addPlant = (newPlant: PlantDto) => {
         emits('plantAdded', plant);
 
         if (formValue.value.date !== null) {
-            console.log(formValue.value.date);
-            api.addWatering(plant.id, formValue.value.date)
+            api.addWatering(plant.id, new Date(formValue.value.date))
                 .then(() => message.success('watering added'))
-                .catch(err => message.error(err))
+                .catch(err => message.error('Error addind the first watering', err))
         }
 
         // Reset form should occure at the end ...

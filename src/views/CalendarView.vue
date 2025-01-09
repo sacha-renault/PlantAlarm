@@ -1,8 +1,7 @@
 <template>
-    <div v-if="isLoading">Loading...</div>
-    <n-flex class="calendar-container content-container" v-else>
+    <n-flex class="calendar-container content-container">
         <m-calendar id="drawer-target" @day-clicked="handleClick" @month-focus-changed="handleMonthChanged"
-            :plants="plants" />
+            :plants="plants" :loading="isLoading" />
         <m-drawer-calendar-content v-model="drawerShow" :date="date" :plants="plants" />
     </n-flex>
 </template>
@@ -24,7 +23,11 @@ const handleClick = (d: Date) => {
 }
 
 const handleMonthChanged = (date: Date, numDays: number) => {
-
+    console.log(date, numDays);
+    isLoading.value = true;
+    api.getPlantsWithRecentWatering(date, numDays).then(data => {
+        plants.value = data;
+    }).finally(() => isLoading.value = false)
 }
 
 onMounted(async () => {

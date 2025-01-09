@@ -13,6 +13,9 @@ export const calcDayDifference = (date1: Date, date2: Date): number => {
     return diffTime / (1000 * 60 * 60 * 24);
 }
 
+export function isSameDay(date1: Date, date2: Date): boolean {
+    return calcDayDifference(date1, date2) === 0;
+}
 
 /**
  * Formats a date object into a string with weekday, day, and month.
@@ -47,6 +50,41 @@ export function filterPlantsAtDay(plants: PlantWithWateringsModel[], date: Date)
         }
     }
     return plantsAtDay;
+}
+
+export function groupPlantPerNextWateringDay(plants: PlantWithWateringsModel[]) {
+    // Initialize an empty array to store the grouped plants by next watering day
+    const groupedPlants: { date: Date, plants: PlantWithWateringsModel[] }[] = [];
+
+    // Iterate through each plant and group them by their next watering day
+    plants.forEach((plant) => {
+        // Find the last watering date by mapping and reducing the waterings
+        const lastWatered = plant.waterings
+            .map((w) => w.dateWatered)
+            .reduce((a, b) => (a > b ? a : b));
+
+        // Calculate the next watering day based on the day interval and reset time to 00:00
+        const nextWatering = new Date(
+            addDays(lastWatered, plant.dayInterval).setHours(0, 0, 0, 0)
+        );
+
+        // Find if the nextWatering date already exists in groupedPlants
+        const existingGroup = groupedPlants.find(group => group.date.getTime() === nextWatering.getTime());
+
+        if (existingGroup) {
+            // If the date exists, add the plant to the corresponding group
+            existingGroup.plants.push(plant);
+        } else {
+            // If the date doesn't exist, create a new group with this date and the plant
+            groupedPlants.push({ date: nextWatering, plants: [plant] });
+        }
+    });
+
+    // Sort the grouped plants by date in ascending order
+    groupedPlants.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+    // Return the grouped plants with their next watering date
+    return groupedPlants;
 }
 
 /**

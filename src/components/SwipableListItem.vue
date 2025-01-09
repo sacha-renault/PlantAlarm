@@ -1,12 +1,12 @@
 <template>
     <n-flex class="wf main-swipable-container" ref="mainContainer">
         <!-- Main display -->
-        <div @touchstart="touchHandlers.onTouchStart"
-            @touchmove="touchHandlers.onTouchMove" @touchend="touchHandlers.onTouchEnd"
-            @mousedown="mouseHandlers.onMouseDown" @mousemove="mouseHandlers.onMouseMove"
-            @mouseup="mouseHandlers.onMouseUp" :style="{ transform: 'translateX(' + currentX.toString() + 'px)' }"
-            class="wf swipable-container" :class="{'swipable-container-swiping' : isDragging }">
-            <slot name="default"/>
+        <div @touchstart="touchHandlers.onTouchStart" @touchmove="touchHandlers.onTouchMove"
+            @touchend="touchHandlers.onTouchEnd" @mousedown="mouseHandlers.onMouseDown"
+            @mousemove="mouseHandlers.onMouseMove" @mouseup="mouseHandlers.onMouseUp"
+            :style="{ transform: 'translateX(' + currentX.toString() + 'px)' }" class="wf swipable-container"
+            :class="{ 'swipable-container-swiping': isDragging }">
+            <slot name="default" />
         </div>
 
         <!-- Under swipe -->
@@ -15,14 +15,14 @@
             <!-- Left part -->
             <div class="under-swipe-part" :class="[{ 'under-swipe-visible': isSwipingLeft }]">
                 <div class="icon-small icon-grow" :class="[{ 'swiped': isSwipedLeft }]">
-                    <slot name="icon-left"/>
+                    <slot name="icon-left" />
                 </div>
             </div>
 
             <!-- Right part -->
             <div class="under-swipe-part " :class="[{ 'under-swipe-visible': isSwipingRight }]">
                 <div class="icon-small icon-grow" :class="[{ 'swiped': isSwipedRight }]">
-                    <slot name="icon-right"/>
+                    <slot name="icon-right" />
                 </div>
             </div>
         </div>
@@ -90,7 +90,7 @@ export default {
             }
         },
 
-        handleDragEnd () {
+        handleDragEnd() {
             this.isDragging = false;
 
             if (Math.abs(this.currentX) < this.thresholdPx) {
@@ -108,9 +108,9 @@ export default {
 
             setTimeout(() => {
                 this.currentX = 0;
+                this.$emit('swipeAnimationOver', this.isSwipedLeft ? 'left' : 'right');
                 this.isSwipedLeft = false;
                 this.isSwipedRight = false;
-                this.$emit('swipeAnimationOver');
 
                 setTimeout(() => {
                     this.isSwipingRight = false;
@@ -132,7 +132,7 @@ export default {
         }
     },
     data() {
-        return  {
+        return {
             mouseHandlers: {
                 onMouseDown: (e: MouseEvent) => this.handleDragStart(e.clientX),
                 onMouseMove: (e: MouseEvent) => this.handleDragMove(e.clientX),
@@ -156,7 +156,7 @@ export default {
     },
     computed: {
         leftUnderColor() { return this.leftColor ?? this.themeVars.warningColor; },
-        rightUnderColor(){ return this.rightColor ?? this.themeVars.infoColor; },
+        rightUnderColor() { return this.rightColor ?? this.themeVars.infoColor; },
         maxSwipePx() { return this.parseStringAsPx(this.maxSwipe) },
         thresholdPx() { return this.parseStringAsPx(this.swipeThreshold) }
     }

@@ -18,12 +18,12 @@
                     <n-flex vertical style="padding: 1rem;">
                         <h4>Choose plant(s) to display</h4>
                         <n-divider />
-                        <n-checkbox @click="handleAllPlantClick" :checked="numberSelected === plantSelected.length"
-                            :indeterminate="!(numberSelected === 0 || numberSelected === plantSelected.length)">
+                        <n-checkbox @click="handleAllPlantClick" :checked="numberSelected === plantSelected.size"
+                            :indeterminate="!(numberSelected === 0 || numberSelected === plantSelected.size)">
                             All plants
                         </n-checkbox>
-                        <n-checkbox v-for="(plant, index) in plants" :key="index"
-                            v-model:checked="plantSelected[index]">
+                        <n-checkbox v-for="(plant, index) in plants" :key="index" :checked="plantSelected.get(plant.id)"
+                            @click="plantSelected.set(plant.id, !plantSelected.get(plant.id))">
                             {{ plant.name }}
                         </n-checkbox>
                     </n-flex>
@@ -35,7 +35,7 @@
                 <m-calendar-item v-for="date in calendarDays" :key="date.id" :dateInfo="date"
                     :selected="selectedDate !== null && isSameDay(selectedDate, date.date)"
                     :current-day="isSameDay(today, date.date)" :is-other-month="!isSameMonth(currentMonth, date.date)"
-                    @clicked="handleClick" :plants="filteredPlants" />
+                    @clicked="handleClick" :plants="filteredPlants" :loading="loading" />
             </div>
         </n-layout>
         <n-layout-footer>
@@ -61,18 +61,27 @@
 <script setup lang="ts">
 import { ArrowRight28Filled as ForwardIcon, ArrowLeft28Filled as BackwardIcon, Filter16Filled as FIlterIcon } from '@vicons/fluent'
 import MCalendarItem from './MCalendarItem.vue';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import type { PlantWithWateringsModel } from '../../interfaces/models.ts';
 
 const today = new Date();
 const currentMonth = ref(new Date());
 const selectedDate = ref<Date | null>(null);
-const { plants } = defineProps<{ plants: PlantWithWateringsModel[] }>()
-const plantSelected = ref(plants.map(_ => true));
+const { plants, loading } = defineProps<{ plants: PlantWithWateringsModel[], loading: boolean }>()
+const plantSelected = ref(new Map<number, boolean>());
 const emits = defineEmits(['dayClicked', 'monthFocusChanged']);
 const filteredPlants = computed(() => {
-    return plants.filter((_, index) => plantSelected.value[index]);
+    return plants.filter(plant => plantSelected.value.get(plant.id));
 });
+
+// Watch if there is new plant comming
+watch(() => plants, (newPlants) => {
+    newPlants.forEach(plant => {
+        if (!plantSelected.value.has(plant.id)) {
+            plantSelected.value.set(plant.id, true); // Add new plants, keep existing selections
+        }
+    });
+})
 
 // Format the current month display
 const currentMonthDisplay = computed(() => {
@@ -162,7 +171,7 @@ const goToToday = () => {
 
 const emitMonthChanged = () => {
     const daysNum = calendarDays.value.length;
-    emits('monthFocusChanged', calendarDays.value[daysNum], daysNum);
+    emits('monthFocusChanged', calendarDays.value[daysNum - 1].date, daysNum);
 }
 
 // Utility functions
@@ -178,14 +187,22 @@ const isSameMonth = (date1: Date, date2: Date): boolean => {
 };
 
 const handleAllPlantClick = () => {
-    if (numberSelected.value === plantSelected.value.length) {
-        plantSelected.value = plantSelected.value.map(() => false)
-    } else {
-        plantSelected.value = plantSelected.value.map(() => true)
-    }
-}
+    // Check if all plants are selected
+    const allSelected = plantSelected.value.size === plants.length &&
+        Array.from(plantSelected.value.values()).every(selected => selected);
 
-const numberSelected = computed(() => plantSelected.value.filter(item => item === true).length)
+    if (allSelected) {
+        // Deselect all
+        plantSelected.value.forEach((_, id) => plantSelected.value.set(id, false));
+    } else {
+        // Select all
+        plants.forEach(plant => plantSelected.value.set(plant.id, true));
+    }
+};
+
+const numberSelected = computed(() => {
+    return Array.from(plantSelected.value.values()).filter(selected => selected).length;
+});
 </script>
 
 <style scoped>
