@@ -26,13 +26,13 @@ import {
     Dismiss28Filled as DismissIcon,
 } from '@vicons/fluent'
 import { NAvatar, NButton } from 'naive-ui';
-import { filterPlantsAtDay } from '../../utils';
+import { calcDayDifference } from '../../utils';
 import type { PlantWithWateringsModel } from '../../interfaces/models.ts';
 import { onMounted, ref, watch, h } from 'vue';
 import { formatDateWithWeekday } from '../../utils';
 
 interface PlantDataDisplay {
-    img: string
+    image: string
     name: string
     waterQuantity: number
 }
@@ -44,7 +44,8 @@ const columns = ref([
                 NAvatar, {
                 size: 'medium',
                 round: true,
-                src: row.img
+                src: row.image,
+                objectFit: 'cover'
             })
         }
     },
@@ -61,11 +62,13 @@ const plantsOnDay = ref<PlantWithWateringsModel[]>([]);
 const { date, plants } = defineProps<{ date: Date, plants: PlantWithWateringsModel[] }>();
 
 onMounted(async () => {
-    plantsOnDay.value = filterPlantsAtDay(plants, date);
+    plantsOnDay.value = plants.filter(p =>
+        p.waterings.some(w => calcDayDifference(w.dateWatered, date) === 0));
 })
 
 watch(() => date, (newValue) => {
-    plantsOnDay.value = filterPlantsAtDay(plants, newValue);
+    plantsOnDay.value = plants.filter(p =>
+        p.waterings.some(w => calcDayDifference(w.dateWatered, newValue) === 0));
 })
 
 </script>

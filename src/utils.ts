@@ -45,7 +45,7 @@ export function filterPlantsAtDay(plants: PlantWithWateringsModel[], date: Date)
     for (const plant of plants) {
         const lastWatered = plant.waterings.map(w => w.dateWatered).reduce((a, b) => a > b ? a : b);
         const dayDiff = calcDayDifference(date, lastWatered);
-        if (dayDiff % plant.dayInterval === 0) {
+        if (dayDiff === 0) {
             plantsAtDay.push(plant);
         }
     }
