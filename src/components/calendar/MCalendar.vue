@@ -69,7 +69,7 @@ const currentMonth = ref(new Date());
 const selectedDate = ref<Date | null>(null);
 const { plants } = defineProps<{ plants: PlantWithWateringsModel[] }>()
 const plantSelected = ref(plants.map(_ => true));
-const emits = defineEmits(['dayClicked']);
+const emits = defineEmits(['dayClicked', 'monthFocusChanged']);
 const filteredPlants = computed(() => {
     return plants.filter((_, index) => plantSelected.value[index]);
 });
@@ -142,6 +142,7 @@ const nextMonth = () => {
         currentMonth.value.getMonth() + 1,
         1
     );
+    emitMonthChanged();
 };
 
 const previousMonth = () => {
@@ -150,12 +151,19 @@ const previousMonth = () => {
         currentMonth.value.getMonth() - 1,
         1
     );
+    emitMonthChanged();
 };
 
 const goToToday = () => {
     currentMonth.value = new Date();
     selectedDate.value = new Date();
+    emitMonthChanged();
 };
+
+const emitMonthChanged = () => {
+    const daysNum = calendarDays.value.length;
+    emits('monthFocusChanged', calendarDays.value[daysNum], daysNum);
+}
 
 // Utility functions
 const isSameDay = (date1: Date, date2: Date): boolean => {

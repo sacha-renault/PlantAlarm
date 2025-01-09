@@ -109,6 +109,27 @@ const resetForm = () => {
     model.value = false;
 }
 
+const addPlant = (newPlant: PlantDto) => {
+    api.addPlant(newPlant).then((plant) => {
+        // plant created with success
+        message.success('New plant created');
+        emits('plantAdded', plant);
+
+        if (formValue.value.date !== null) {
+            console.log(formValue.value.date);
+            api.addWatering(plant.id, formValue.value.date)
+                .then(() => message.success('watering added'))
+                .catch(err => message.error(err))
+        }
+
+        // Reset form should occure at the end ...
+        resetForm();
+
+    }).catch(err => {
+        message.error('An error occured when creating new plant: ' + err);
+    });
+}
+
 const handleValidateClick = (e: MouseEvent) => {
     e.preventDefault()
     formRef.value?.validate((errors) => {
@@ -119,13 +140,8 @@ const handleValidateClick = (e: MouseEvent) => {
                 waterQuantity: formValue.value.waterQty ?? 0,  // Shouldn't be 0
                 image: formValue.value.image
             };
-            api.addPlant(newPlant).then(plant => {
-                message.success('New plant created');
-                emits('plantAdded', plant);
-                resetForm();
-            }).catch(err => {
-                message.error('An error occured when creating new plant: ' + err);
-            });
+            addPlant(newPlant);
+
         }
         else {
             message.error('Please fill all the inputs');
