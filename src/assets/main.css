@@ -27,15 +27,6 @@ h1 {
     font-size: clamp(2rem, calc(3vw + 1rem), 3rem);
 }
 
-.content-container {
-    width: min(80%, 1024px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    padding: 0.5rem;
-}
-
 .main-modal {
     width: min(80%, 1024px);
 }

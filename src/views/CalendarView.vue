@@ -1,5 +1,5 @@
 <template>
-    <n-flex class="calendar-container content-container">
+    <n-flex>
         <m-calendar id="drawer-target" @day-clicked="handleClick" @month-focus-changed="handleMonthChanged"
             :plants="plants" :loading="isLoading" />
         <m-drawer-calendar-content v-model="drawerShow" :date="date" :plants="plants" />

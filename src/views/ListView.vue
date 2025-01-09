@@ -1,5 +1,5 @@
 <template>
-    <div class="wf content-container">
+    <div>
         <h1>
             Plants to water
         </h1>

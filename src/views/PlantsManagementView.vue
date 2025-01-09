@@ -1,5 +1,5 @@
 <template>
-    <n-flex vertical class="content-container">
+    <n-flex vertical>
         <h1> Manage Plants </h1>
         <n-divider />
 
@@ -12,10 +12,12 @@
         </n-button>
 
         <!-- Display current plant -->
-        <n-skeleton :repeat="6" width="100%" :sharp="false" v-if="!pageLoaded"/>
+        <n-skeleton :repeat="6" width="100%" :sharp="false" v-if="!pageLoaded" />
         <n-card v-else v-for="plant in plants"> {{ plant.name }} {{ plant.waterQuantity }} </n-card>
+
+        <!-- Add plant modal -->
+        <add-plant-modal v-model="showModal" @plant-added="handleNewPlant" />
     </n-flex>
-    <add-plant-modal v-model="showModal" @plant-added="handleNewPlant" />
 </template>
 
 <script setup lang="ts">
