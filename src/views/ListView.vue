@@ -54,8 +54,10 @@ const handleWatered = (plant: PlantWithWateringsModel, date: Date) => {
     // Sort the grouped plants by date in ascending order
     groupedPerDay.value.sort((a, b) => a.date.getTime() - b.date.getTime());
 
-    // we also have to add a watering
-    api.addWatering(plant.id, date).catch(err => console.log('Couldn\'t add watering in the database', err));
+    // we also have to add a watering at date NOW
+    api.addWatering(plant.id, new Date())
+        .then(() => console.log('successfully add watering'))
+        .catch(err => console.log('Couldn\'t add watering in the database', err));
 }
 
 onMounted(async () => {
