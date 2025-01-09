@@ -1,15 +1,11 @@
 <template>
     <n-collapse-transition :show="show">
-        <swipable-list-item
-            @swiped-left="handleSwipe('left')"
-            @swiped-right="handleSwipe('right')"
-            @swipe-animation-over="console.log('animation over')"
-            :animation-duration="0.45"
-            :replace-transition-duration="0.25"
-            swipe-threshold="20%">
+        <swipable-list-item @swiped-left="handleSwipe('left')" @swiped-right="handleSwipe('right')"
+            @swipe-animation-over="console.log('animation over')" :animation-duration="0.45"
+            :replace-transition-duration="0.25" swipe-threshold="20%">
 
             <n-flex align="center" justify="space-evenly" class="swipe-item-template">
-                <n-avatar round :src="plant.image" />
+                <n-avatar round :src="plant.image" object-fit="cover" />
                 <n-divider vertical />
                 <n-space> {{ plant.name }} </n-space>
                 <n-divider vertical />
@@ -17,10 +13,10 @@
             </n-flex>
 
             <template #icon-left>
-                <TimerIcon style="color: black"/>
+                <TimerIcon style="color: black" />
             </template>
             <template #icon-right>
-                <WaterIcon style="color: black"/>
+                <WaterIcon style="color: black" />
             </template>
         </swipable-list-item>
     </n-collapse-transition>
@@ -35,7 +31,7 @@ import { useThemeVars } from 'naive-ui';
 
 const themeVars = useThemeVars();
 const show = ref(true);
-const { plant } = defineProps<{plant: PlantWithWateringsModel}>();
+const { plant } = defineProps<{ plant: PlantWithWateringsModel }>();
 
 const handleSwipe = (_: string) => {
     setTimeout(() => show.value = false, 450);

@@ -14,7 +14,7 @@
             </n-flex>
             <div class="calendar-item-content">
                 <n-badge v-if="plantsOnDay.length !== 0" :value="plantsOnDay.length - 1">
-                    <n-avatar round size="small" :src="mainImage" />
+                    <n-avatar round size="small" :src="mainImage" object-fit="cover" />
                 </n-badge>
             </div>
         </n-flex>
