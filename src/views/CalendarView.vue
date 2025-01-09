@@ -1,5 +1,9 @@
 <template>
-    <n-flex>
+    <n-flex vertical style="height: 100%;">
+        <h1>
+            Water calendar
+        </h1>
+        <n-divider />
         <m-calendar id="drawer-target" @day-clicked="handleClick" @month-focus-changed="handleMonthChanged"
             :plants="plants" :loading="isLoading" />
         <m-drawer-calendar-content v-model="drawerShow" :date="date" :plants="plants" />

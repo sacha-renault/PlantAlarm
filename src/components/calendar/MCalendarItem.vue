@@ -89,7 +89,7 @@ watch([() => props.plants, () => props.dateInfo.date], async ([newPlants, newDat
     border-color: v-bind('themeVars.borderColor');
     cursor: pointer;
     transition: color .3s v-bind('themeVars.cubicBezierEaseIn'), border-color .3s v-bind('themeVars.cubicBezierEaseIn'), background-color .3s v-bind('themeVars.cubicBezierEaseIn');
-    min-height: 125px;
+    min-height: 100px;
     position: relative;
 
     &:hover {
@@ -164,7 +164,7 @@ watch([() => props.plants, () => props.dateInfo.date], async ([newPlants, newDat
 }
 
 .date-string {
-    font-size: 1rem;
+    font-size: 0.8rem;
 }
 
 .calendar-item-content {

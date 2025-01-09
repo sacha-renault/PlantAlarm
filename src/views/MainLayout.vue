@@ -44,8 +44,10 @@ const themeVars = useThemeVars();
     overflow-y: auto;
     overflow-x: hidden;
     width: 100%;
+    height: 100%;
 
     >* {
+        box-sizing: border-box;
         width: min(80%, 1024px);
         display: flex;
         flex-direction: column;

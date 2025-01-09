@@ -1,5 +1,5 @@
 <template>
-    <n-layout>
+    <n-layout class="calendar-container">
         <n-layout-header>
             <n-flex align="center" justify="space-between">
                 <h3>
@@ -210,5 +210,6 @@ const numberSelected = computed(() => {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     grid-template-rows: repeat(5, 1fr);
+    flex-grow: 1;
 }
 </style>
