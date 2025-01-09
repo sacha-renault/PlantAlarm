@@ -30,15 +30,17 @@ const handleWatered = (plant: PlantWithWateringsModel, date: Date) => {
     // Find index of row that threw the event
     const index = groupedPerDay.value.findIndex(r => isSameDay(r.date, date));
 
+    // get now date
+    const now = new Date();
+
     // Find the plant id from the row and delete it
     groupedPerDay.value[index].visibleCount -= 1;
 
     // Insert a new element in the list at the date + dayInterval
-    const newDate = addDays(groupedPerDay.value[index].date, plant.dayInterval);
+    const newDate = addDays(now, plant.dayInterval);
 
     // Check if this new date exists
     const newIndex = groupedPerDay.value.findIndex(r => isSameDay(r.date, newDate));
-    console.log(newIndex);
     if (newIndex !== -1) {
         groupedPerDay.value[newIndex].plants.push(plant);
         groupedPerDay.value[newIndex].visibleCount += 1;
@@ -55,7 +57,7 @@ const handleWatered = (plant: PlantWithWateringsModel, date: Date) => {
     groupedPerDay.value.sort((a, b) => a.date.getTime() - b.date.getTime());
 
     // we also have to add a watering at date NOW
-    api.addWatering(plant.id, new Date())
+    api.addWatering(plant.id, now)
         .then(() => console.log('successfully add watering'))
         .catch(err => console.log('Couldn\'t add watering in the database', err));
 }
