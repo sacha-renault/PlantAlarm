@@ -6,6 +6,7 @@ use std::collections::HashMap;
 
 #[derive(Debug, Serialize)]
 pub struct PlantWithWaterings {
+    pub id: i64,
     pub name: String,
     #[serde(rename = "dayInterval")]
     pub day_interval: i64,
@@ -18,6 +19,7 @@ pub struct PlantWithWaterings {
 impl PlantWithWaterings {
     pub fn new(plant: Plant, waterings: Vec<Watering>) -> Self {
         Self {
+            id: plant.id,
             name: plant.name,
             day_interval: plant.day_interval,
             water_quantity: plant.water_quantity,

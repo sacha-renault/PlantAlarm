@@ -52,6 +52,13 @@ export function filterPlantsAtDay(plants: PlantWithWateringsModel[], date: Date)
     return plantsAtDay;
 }
 
+// Separate utility function
+export function getLastWatered(plant: PlantWithWateringsModel): Date {
+    return plant.waterings
+        .map((w) => w.dateWatered)
+        .reduce((a, b) => (a > b ? a : b));
+}
+
 export function groupPlantPerNextWateringDay(plants: PlantWithWateringsModel[]) {
     // Initialize an empty array to store the grouped plants by next watering day
     const groupedPlants: { date: Date, plants: PlantWithWateringsModel[] }[] = [];
@@ -59,9 +66,7 @@ export function groupPlantPerNextWateringDay(plants: PlantWithWateringsModel[]) 
     // Iterate through each plant and group them by their next watering day
     plants.forEach((plant) => {
         // Find the last watering date by mapping and reducing the waterings
-        const lastWatered = plant.waterings
-            .map((w) => w.dateWatered)
-            .reduce((a, b) => (a > b ? a : b));
+        const lastWatered = getLastWatered(plant);
 
         // Calculate the next watering day based on the day interval and reset time to 00:00
         const nextWatering = new Date(

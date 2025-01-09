@@ -46,6 +46,7 @@ class Api {
             date: formatDate(date),
             offset: offset
         });
+        console.log(response);
 
         return response.map(plant => ({
             ...plant,

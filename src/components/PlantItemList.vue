@@ -24,8 +24,8 @@
                 This plant shouldn't be watered today, confirm watering now ?
 
                 <n-flex justify="space-evenly">
-                    <n-button type="error"> Cancel </n-button>
-                    <n-button type="success" @click="validate"> Confirm</n-button>
+                    <n-button type="error" @click="showPopover = false"> Cancel </n-button>
+                    <n-button type="success" @click="() => validate(date)"> Confirm</n-button>
                 </n-flex>
             </n-flex>
         </n-popover>
@@ -36,22 +36,35 @@
 import { ref } from 'vue';
 import type { PlantWithWateringsModel } from '../interfaces/models';
 import SwipableListItem from './SwipableListItem.vue';
-import { Timer16Regular as TimerIcon, Drop20Regular as WaterIcon } from '@vicons/fluent'
+import { CalendarClock24Regular as TimerIcon, Drop20Regular as WaterIcon } from '@vicons/fluent'
 import { useThemeVars } from 'naive-ui';
+import { isSameDay } from '../utils';
 
 const themeVars = useThemeVars();
 const showPopover = ref(false);
 const show = ref(true);
+const now = ref(new Date());
 const { plant, date } = defineProps<{ plant: PlantWithWateringsModel, date: Date }>();
 const emits = defineEmits(['plantWatered'])
 
-const handleSwipe = (_: string) => {
-    showPopover.value = true;
+const handleSwipe = (direction: string) => {
+    if (direction === 'right') {
+        if (date > now.value && !isSameDay(date, now.value)) {
+            showPopover.value = true;
+        } else {
+            validate(date);
+        }
+    }
+
+    else {
+        // TODO
+        // Date
+    }
 }
 
-const validate = () => {
+const validate = (d: Date) => {
     setTimeout(() => show.value = false, 450);
-    emits('plantWatered', plant, date);
+    emits('plantWatered', plant, d);
 }
 </script>
 

@@ -28,7 +28,7 @@ const groupedPerDay = ref<{ date: Date, plants: PlantWithWateringsModel[], visib
 
 const handleWatered = (plant: PlantWithWateringsModel, date: Date) => {
     // Find index of row that threw the event
-    const index = groupedPerDay.value.findIndex(r => r.date === date);
+    const index = groupedPerDay.value.findIndex(r => isSameDay(r.date, date));
 
     // Find the plant id from the row and delete it
     groupedPerDay.value[index].visibleCount -= 1;
@@ -38,6 +38,7 @@ const handleWatered = (plant: PlantWithWateringsModel, date: Date) => {
 
     // Check if this new date exists
     const newIndex = groupedPerDay.value.findIndex(r => isSameDay(r.date, newDate));
+    console.log(newIndex);
     if (newIndex !== -1) {
         groupedPerDay.value[newIndex].plants.push(plant);
         groupedPerDay.value[newIndex].visibleCount += 1;
@@ -46,18 +47,15 @@ const handleWatered = (plant: PlantWithWateringsModel, date: Date) => {
         groupedPerDay.value.sort((a, b) => a.date.getTime() - b.date.getTime());
     }
     else {
-        // first push new item with no plant
-        const newItem = { date: newDate, plants: [plant], visibleCount: 0 };
-        const insertedIndex = groupedPerDay.value.push(newItem) - 1;
-
-        setTimeout(() => {
-            // Then add the plant for the sliding effect
-            groupedPerDay.value[insertedIndex].visibleCount += 1;
-
-            // Sort the grouped plants by date in ascending order
-            groupedPerDay.value.sort((a, b) => a.date.getTime() - b.date.getTime());
-        })
+        // Then add the plant for the sliding effect
+        groupedPerDay.value.push({ date: newDate, plants: [plant], visibleCount: 1 });
     }
+
+    // Sort the grouped plants by date in ascending order
+    groupedPerDay.value.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+    // we also have to add a watering
+    api.addWatering(plant.id, date).catch(err => console.log('Couldn\'t add watering in the database', err));
 }
 
 onMounted(async () => {
