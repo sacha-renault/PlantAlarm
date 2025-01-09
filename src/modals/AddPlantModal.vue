@@ -1,7 +1,7 @@
 <template>
     <n-modal v-model:show="model" class="main-modal">
         <n-card>
-            <n-flex verical align="center" justify="center">
+            <n-flex verical align="start" justify="center" class="hf">
                 <h1> Add a new Plant !</h1>
                 <n-divider />
                 <n-form ref="formRef" :model="formValue" :rules="rules" class="wf">
@@ -37,18 +37,19 @@
                             </n-flex>
                         </n-flex>
                     </n-form-item>
-
-
-                    <n-button-group class="wf" justify="space-around">
-                        <n-button @click="handleValidateClick" primary type="success" style="width:50%">
-                            Add plant
-                        </n-button>
-                        <n-button @click="resetForm" secondary type="error" style="width:50%">
-                            Quit
-                        </n-button>
-                    </n-button-group>
                 </n-form>
             </n-flex>
+
+            <template #footer>
+                <n-button-group class="wf" justify="space-around">
+                    <n-button @click="resetForm" secondary type="error" style="width:50%">
+                        Quit
+                    </n-button>
+                    <n-button @click="handleValidateClick" secondary type="success" style="width:50%">
+                        Add plant
+                    </n-button>
+                </n-button-group>
+            </template>
         </n-card>
     </n-modal>
 </template>
