@@ -4,6 +4,7 @@ use sqlx::Error;
 #[derive(Serialize, Debug, Deserialize)]
 pub enum BackendError {
     DatabaseError(String),
+    DateError(String),
     UncaughtError(String),
 }
 

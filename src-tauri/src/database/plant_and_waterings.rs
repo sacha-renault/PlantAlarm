@@ -7,7 +7,9 @@ use std::collections::HashMap;
 #[derive(Debug, Serialize)]
 pub struct PlantWithWaterings {
     pub name: String,
+    #[serde(rename = "dayInterval")]
     pub day_interval: i64,
+    #[serde(rename = "waterQuantity")]
     pub water_quantity: i64,
     pub image: Option<String>,
     pub waterings: Vec<Watering>,

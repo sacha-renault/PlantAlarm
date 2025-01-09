@@ -1,3 +1,4 @@
+use super::super::parsing::date::serialize_naive_datetime;
 use super::{constant::DB_RESULT_LIMIT, BackendError, MapErrorExt};
 use chrono::{Local, NaiveDateTime};
 use serde::{Deserialize, Serialize};
@@ -8,7 +9,9 @@ use sqlx::FromRow;
 #[derive(Debug, FromRow, Serialize)]
 pub struct Watering {
     pub id: i64,
+    #[serde(rename = "plantId")]
     pub plant_id: i64,
+    #[serde(rename = "dateWatered", serialize_with = "serialize_naive_datetime")]
     pub date_watered: NaiveDateTime,
 }
 
