@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { useThemeVars } from 'naive-ui'
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import type { PlantWithWateringsModel } from "../../interfaces/models";
 import { calcDayDifference } from '../../utils';
 
@@ -63,12 +63,21 @@ const getDayName = (date: Date): string => {
     return date.toLocaleDateString('default', { weekday: 'short' });
 };
 
-onMounted(async () => {
+const mountFn = async (plants: PlantWithWateringsModel[], date: Date) => {
     // reset to be sure
-    plantsOnDay.value = props.plants.filter(p =>
-        p.waterings.some(w => calcDayDifference(w.dateWatered, props.dateInfo.date) === 0));
+    plantsOnDay.value = plants.filter(p =>
+        p.waterings.some(w => calcDayDifference(w.dateWatered, date) === 0));
     mainImage.value = getFirstPlantImage();
-})
+
+    if (plantsOnDay.value.length !== 0) {
+        console.log(props.dateInfo.date);
+    }
+}
+
+onMounted(async () => await mountFn(props.plants, props.dateInfo.date));
+watch([() => props.plants, () => props.dateInfo.date], async ([newPlants, newDate]) => {
+    await mountFn(newPlants, newDate);
+});
 </script>
 
 <style scoped>

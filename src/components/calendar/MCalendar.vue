@@ -35,7 +35,7 @@
                 <m-calendar-item v-for="date in calendarDays" :key="date.id" :dateInfo="date"
                     :selected="selectedDate !== null && isSameDay(selectedDate, date.date)"
                     :current-day="isSameDay(today, date.date)" :is-other-month="!isSameMonth(currentMonth, date.date)"
-                    @clicked="handleClick" :plants="plants" />
+                    @clicked="handleClick" :plants="filteredPlants" />
             </div>
         </n-layout>
         <n-layout-footer>
@@ -70,6 +70,9 @@ const selectedDate = ref<Date | null>(null);
 const { plants } = defineProps<{ plants: PlantWithWateringsModel[] }>()
 const plantSelected = ref(plants.map(_ => true));
 const emits = defineEmits(['dayClicked']);
+const filteredPlants = computed(() => {
+    return plants.filter((_, index) => plantSelected.value[index]);
+});
 
 // Format the current month display
 const currentMonthDisplay = computed(() => {
