@@ -1,7 +1,8 @@
 <template>
     <!-- Button in center -->
     <n-flex style="grid-area: nav" justify="space-evenly" align="center">
-        <n-button @click="handleMenuClick('calendar')" :bordered="false" :color="buttonColor('calendar')" ghost>
+        <n-button @click="handleMenuClick('calendar')" :bordered="false" ghost
+            :class="{ 'nav-button-active': isButtonActive('calendar') }">
             <template #icon>
                 <CalendarIcon />
             </template>
@@ -9,7 +10,9 @@
                 Calendar
             </div>
         </n-button>
-        <n-button @click="handleMenuClick('list')" :bordered="false" :color="buttonColor('list')" ghost>
+        <n-button @click="handleMenuClick('list')" :bordered="false" ghost
+            :class="{ 'nav-button-active': isButtonActive('list') || isButtonActive('') }"
+            :color="buttonColor('list') ?? buttonColor('')">
             <template #icon>
                 <ListIcon />
             </template>
@@ -17,7 +20,8 @@
                 List
             </div>
         </n-button>
-        <n-button @click="handleMenuClick('plants')" :bordered="false" :color="buttonColor('plants')" ghost>
+        <n-button @click="handleMenuClick('plants')" :bordered="false" ghost
+            :class="{ 'nav-button-active': isButtonActive('plants') }">
             <template #icon>
                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24">
                     <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -45,15 +49,47 @@ import {
 import { useThemeVars } from 'naive-ui';
 import { router } from '../routers/main.ts'
 
+const themeVars = useThemeVars();
 const selectedButton = ref('calendar');
 
 const handleMenuClick = (buttonName: string) => {
     selectedButton.value = buttonName;
     router.push('/' + buttonName);
 }
-const buttonColor = (buttonName: string) => {
-    return selectedButton.value === buttonName ? useThemeVars().value.primaryColor : '';
+const isButtonActive = (buttonName: string) => {
+    const routerVal = router.currentRoute.value.path.substring(1);
+    return buttonName === routerVal;
+}
+
+const buttonColor = (buttonName: string): string => {
+    return isButtonActive(buttonName) ? themeVars.value.primaryColor : '';
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.n-button {
+    &::after {
+        transition: 0.5s ease;
+        content: "";
+        background-color: v-bind('themeVars.primaryColor');
+        border-radius: v-bind('themeVars.borderRadius');
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 0%;
+        height: 7%;
+    }
+
+    &:hover {
+        &::after {
+            width: 100%;
+        }
+    }
+}
+
+.nav-button-active {
+    &::after {
+        width: 100%;
+    }
+}
+</style>
