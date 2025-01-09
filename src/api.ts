@@ -30,9 +30,30 @@ const mockedPlants = [
     },
 ]
 
+const formatDate = (date: Date): string => {
+    return date.toISOString()
+        .replace('T', ' ')
+        .split('.')[0];
+}
+
+const parseNaiveDateTime = (dateStr: string): Date => {
+    return new Date(dateStr.replace(' ', 'T') + 'Z');
+}
+
 class Api {
-    async getPlantsWithRecentWatering(): Promise<PlantWithWateringsModel[]> {
-        return mockedPlants;
+    async getPlantsWithRecentWatering(date: Date, offset: number): Promise<PlantWithWateringsModel[]> {
+        const response = await invoke<PlantWithWateringsModel[]>('get_all_plant_with_watering', {
+            date: formatDate(date),
+            offset: offset
+        });
+
+        return response.map(plant => ({
+            ...plant,
+            waterings: plant.waterings.map((watering: any) => ({
+                ...watering,
+                dateWatered: parseNaiveDateTime(watering.dateWatered)
+            }))
+        }));
     }
 
     async addPlant(plant: PlantDto): Promise<PlantModel> {
@@ -41,6 +62,13 @@ class Api {
 
     async getAllPlants(): Promise<PlantModel[]> {
         return await invoke<PlantModel[]>('get_all_plants');
+    }
+
+    async addWatering(plantId: number, date: Date): Promise<void> {
+        return await invoke('add_watering', {
+            plantId: plantId,
+            date: formatDate(date)
+        })
     }
 }
 
