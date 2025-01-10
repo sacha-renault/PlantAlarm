@@ -10,7 +10,7 @@
         <n-flex vertical style="height: 100%;">
             <n-flex align="center" justify="space-between">
                 <div class="cell-day">{{ dateInfo.dayOfMonth }}</div>
-                <div class="date-string">{{ getDayName(dateInfo.date) }}</div>
+                <div class="date-string desktop-only">{{ getDayName(dateInfo.date) }}</div>
             </n-flex>
             <div class="calendar-item-content">
                 <n-skeleton v-if="loading" round size="small" />
@@ -145,8 +145,7 @@ watch([() => props.plants, () => props.dateInfo.date], async ([newPlants, newDat
 }
 
 .cell-day {
-    aspect-ratio: 1 / 1;
-    border-radius: 50%;
+    border-radius: 25%;
     width: 1.3em;
     height: 1.3em;
     display: flex;
