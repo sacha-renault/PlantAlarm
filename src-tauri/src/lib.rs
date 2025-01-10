@@ -30,7 +30,7 @@ async fn add_watering(
     db: State<'_, DbConnection>,
     plant_id: i64,
     date: String,
-) -> Result<(), BackendError> {
+) -> Result<Watering, BackendError> {
     // Parse the date
     let parsed_date = parse_date_str(date)
         .map_err(|e| BackendError::DateError(format!("Failed to parse date: {}", e)))?;

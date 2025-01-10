@@ -21,7 +21,7 @@ impl Watering {
         pool: &SqlitePool,
         plant_id: i64,
         date_watered: NaiveDateTime,
-    ) -> Result<(), BackendError> {
+    ) -> Result<Watering, BackendError> {
         // Check if the plant exists
         let plant_exists_query = r#"SELECT COUNT(*) FROM plant WHERE id = ?"#;
         let plant_exists: (i64,) = sqlx::query_as(plant_exists_query)
@@ -42,25 +42,30 @@ impl Watering {
             VALUES (?, ?)
         "#;
 
-        sqlx::query(insert_query)
+        let result = sqlx::query(insert_query)
             .bind(plant_id)
             .bind(date_watered)
             .execute(pool)
             .await
             .map_error()?;
 
-        Ok(())
+        Ok(Watering {
+            id: result.last_insert_rowid(),
+            plant_id: plant_id,
+            date_watered: date_watered,
+        })
     }
 
     /// Insert a new watering entry at date now
-    pub async fn insert_watering_now(pool: &SqlitePool, plant_id: i64) -> Result<(), BackendError> {
+    pub async fn insert_watering_now(
+        pool: &SqlitePool,
+        plant_id: i64,
+    ) -> Result<Watering, BackendError> {
         // Init a time at now
         let now = Local::now().naive_utc();
 
         // Insert into db
-        Self::insert_watering(&pool, plant_id, now).await?;
-
-        Ok(())
+        Self::insert_watering(&pool, plant_id, now).await
     }
 
     /// Get all watering in page
