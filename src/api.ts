@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { PlantDto } from "./interfaces/dto";
-import type { PlantModel, PlantWithWateringsModel } from "./interfaces/models";
+import type { PlantModel, PlantWithWateringsModel, WateringModel } from "./interfaces/models";
 
 const formatDate = (date: Date): string => {
     return date.toISOString()
@@ -37,11 +37,13 @@ class Api {
         return await invoke<PlantModel[]>('get_all_plants');
     }
 
-    async addWatering(plantId: number, date: Date): Promise<void> {
-        return await invoke('add_watering', {
+    async addWatering(plantId: number, date: Date): Promise<WateringModel> {
+        const result: any = await invoke<WateringModel>('add_watering', {
             plantId: plantId,
             date: formatDate(date)
-        })
+        });
+
+        return { ...result, dateWatered: parseNaiveDateTime(result.dateWatered) }
     }
 }
 
